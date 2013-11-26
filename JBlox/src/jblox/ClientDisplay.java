@@ -3,6 +3,7 @@ package jblox;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
@@ -16,7 +17,8 @@ import org.lwjgl.util.glu.GLU;
  */
 public class ClientDisplay {
     
-    private final Entry entry;
+    private final ClientInput clientInput;
+    private final Client client;
     
     private final int WIDTH = 1000;
     private final int HEIGHT = 600;
@@ -28,8 +30,9 @@ public class ClientDisplay {
     
     private float rotquad;
     
-    public ClientDisplay(final Entry entry) {
-        this.entry = entry;
+    public ClientDisplay() {
+        clientInput = new ClientInput();
+        client = new Client(clientInput);
     }
     
     // -------------------------------------------------------------------------
@@ -42,10 +45,12 @@ public class ClientDisplay {
             Display.destroy();
         }
         
+        Mouse.setGrabbed(true);
+        
         getDelta();
         lastFPS = getTime();
         
-        while (!Display.isCloseRequested()) {
+        while (!Display.isCloseRequested() && !clientInput.isESCPressed()) {
 
             final int delta = getDelta();
             
@@ -82,7 +87,7 @@ public class ClientDisplay {
         GL11.glMatrixMode(GL11.GL_PROJECTION);
         GL11.glLoadIdentity();
         
-        final float fov = 45.0f;
+        final float fov = 90.0f;
         final float aspect_ratio = (float)width/(float)height;
         final float near = 1.0f;
         final float far = 100.0f;
@@ -104,10 +109,9 @@ public class ClientDisplay {
     }
     
     private void update(final int delta) {
-        final ClientInput clientInput = entry.getClientInput();
-        if (clientInput != null) {
-            clientInput.checkForInput();
-        }
+        
+        clientInput.checkForInput();
+        client.update();
         
         updateFPS();
     }
@@ -117,6 +121,13 @@ public class ClientDisplay {
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
         GL11.glLoadIdentity();//    Reset View
         
+        //  Set view
+        if (client != null) {
+            GL11.glRotatef(client.getPitch(), 1.0f, 0.0f, 0.0f);
+            GL11.glRotatef(client.getYaw(), 0.0f, 1.0f, 0.0f);
+            GL11.glTranslatef(client.getX(), client.getY(), client.getZ());
+        }
+            
         GL11.glPushMatrix();
         GL11.glTranslatef(5.0f, 0.0f, -10.0f);// Move Oject
         temp();

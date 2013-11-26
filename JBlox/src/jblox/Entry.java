@@ -9,23 +9,14 @@ package jblox;
 public class Entry {
     
     private final ClientDisplay clientDisplay;
-    private final ClientInput clientInput;
 
     public Entry() {
-        clientDisplay = new ClientDisplay(this);
+        clientDisplay = new ClientDisplay();
         clientDisplay.start();
-        
-        clientInput = new ClientInput();
     }
     
     public static void main(final String[] args) {
         final Entry entry = new Entry();
-    }
-    
-    // -------------------------------------------------------------------------
-    
-    public ClientInput getClientInput() {
-        return clientInput;
     }
 }
 

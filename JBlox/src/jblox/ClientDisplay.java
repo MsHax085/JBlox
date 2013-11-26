@@ -117,7 +117,18 @@ public class ClientDisplay {
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
         GL11.glLoadIdentity();//    Reset View
         
-        GL11.glTranslatef(0.0f, 0.0f, -7.0f);// Translate Into The Screen 7.0 Units
+        GL11.glPushMatrix();
+        GL11.glTranslatef(5.0f, 0.0f, -10.0f);// Move Oject
+        temp();
+        GL11.glPopMatrix();
+        
+        GL11.glPushMatrix();
+        GL11.glTranslatef(-5.0f, 0.0f, -10.0f);
+        temp();
+        GL11.glPopMatrix();
+    }
+    
+    private void temp() {
         GL11.glRotatef(rotquad, 0.0f, 1.0f, 0.0f);	//  Rotate Y-Axis
         GL11.glRotatef(rotquad, 1.0f, 1.0f, 1.0f);//    Rotate All-Axis
         GL11.glBegin(GL11.GL_QUADS);
@@ -127,31 +138,31 @@ public class ClientDisplay {
             GL11.glVertex3f(-1.0f, 1.0f,-1.0f);//   Top Left (TOP)
             GL11.glVertex3f(-1.0f, 1.0f, 1.0f);//   Bottom Left (TOP)
             GL11.glVertex3f( 1.0f, 1.0f, 1.0f);//   Bottom Right (TOP)
-            
+
             GL11.glColor3f(1.0f, 0.5f, 0.0f);//   Orange
             GL11.glVertex3f( 1.0f,-1.0f, 1.0f);//   Top Right (BOTTOM)
             GL11.glVertex3f(-1.0f,-1.0f, 1.0f);//   Top Left (BOTTOM)
             GL11.glVertex3f(-1.0f,-1.0f,-1.0f);//   Bottom Left (BOTTOM)
             GL11.glVertex3f( 1.0f,-1.0f,-1.0f);//   Bottom Right (BOTTOM)
-            
+
             GL11.glColor3f(1.0f, 0.0f, 0.0f);// Red
-            GL11.glVertex3f( 1.0f, 1.0f, 1.0f);//   Top Right (BOTTOM)
-            GL11.glVertex3f(-1.0f, 1.0f, 1.0f);//   Top Left (BOTTOM)
-            GL11.glVertex3f(-1.0f,-1.0f, 1.0f);//   Bottom Left (BOTTOM)
-            GL11.glVertex3f( 1.0f,-1.0f, 1.0f);//   Bottom Right (BOTTOM)
-            
+            GL11.glVertex3f( 1.0f, 1.0f, 1.0f);//   Top Right (FRONT)
+            GL11.glVertex3f(-1.0f, 1.0f, 1.0f);//   Top Left (FRONT)
+            GL11.glVertex3f(-1.0f,-1.0f, 1.0f);//   Bottom Left (FRONT)
+            GL11.glVertex3f( 1.0f,-1.0f, 1.0f);//   Bottom Right (FRONT)
+
             GL11.glColor3f(1.0f, 1.0f, 0.0f);// Yellow
             GL11.glVertex3f( 1.0f,-1.0f,-1.0f);// Top Right (BACK)
             GL11.glVertex3f(-1.0f,-1.0f,-1.0f);// Top Left (BACK)
             GL11.glVertex3f(-1.0f, 1.0f,-1.0f);// Bottom Left (BACK)
             GL11.glVertex3f( 1.0f, 1.0f,-1.0f);// Bottom Right (BACK)
-            
+
             GL11.glColor3f(0.0f, 0.0f, 1.0f);// Blue
             GL11.glVertex3f(-1.0f, 1.0f, 1.0f);// Top Right (LEFT)
             GL11.glVertex3f(-1.0f, 1.0f,-1.0f);// Top Left (LEFT)
             GL11.glVertex3f(-1.0f,-1.0f,-1.0f);// Bottom Left (LEFT)
             GL11.glVertex3f(-1.0f,-1.0f, 1.0f);// Bottom Right (LEFT)
-            
+
             GL11.glColor3f(1.0f, 0.0f, 1.0f);// Violet
             GL11.glVertex3f( 1.0f, 1.0f,-1.0f);// Top Right (RIGHT)
             GL11.glVertex3f( 1.0f, 1.0f, 1.0f);// Top Left (RIGHT)
@@ -159,7 +170,7 @@ public class ClientDisplay {
             GL11.glVertex3f( 1.0f,-1.0f,-1.0f);// Bottom Right (RIGHT)
         }
         GL11.glEnd();
-
+        
         rotquad +=0.1f;
     }
     

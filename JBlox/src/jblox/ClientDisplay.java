@@ -1,6 +1,7 @@
 
 package jblox;
 
+import java.awt.Font;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Mouse;
@@ -8,6 +9,8 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
+import org.newdawn.slick.Color;
+import org.newdawn.slick.TrueTypeFont;
 
 /**
  *
@@ -127,7 +130,7 @@ public class ClientDisplay {
             GL11.glRotatef(client.getYaw(), 0.0f, 1.0f, 0.0f);
             GL11.glTranslatef(client.getX(), client.getY(), client.getZ());
         }
-            
+        //  2D Slick Text: https://github.com/OskarVeerhoek/YouTube-tutorials/blob/master/src/episode_28/TextDemo.java
         GL11.glPushMatrix();
         GL11.glTranslatef(5.0f, 0.0f, -10.0f);// Move Oject
         temp();
@@ -135,6 +138,11 @@ public class ClientDisplay {
         
         GL11.glPushMatrix();
         GL11.glTranslatef(-5.0f, 0.0f, -10.0f);
+        temp();
+        GL11.glPopMatrix();
+        
+        GL11.glPushMatrix();
+        GL11.glTranslatef(0.0f, 0.0f, -20.0f);
         temp();
         GL11.glPopMatrix();
     }

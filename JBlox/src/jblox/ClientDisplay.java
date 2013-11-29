@@ -2,6 +2,8 @@
 package jblox;
 
 import java.awt.Font;
+import java.nio.FloatBuffer;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Mouse;
@@ -10,7 +12,9 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 import org.newdawn.slick.Color;
-import org.newdawn.slick.TrueTypeFont;
+import org.newdawn.slick.SlickException;
+import org.newdawn.slick.UnicodeFont;
+import org.newdawn.slick.font.effects.ColorEffect;
 
 /**
  *
@@ -30,6 +34,9 @@ public class ClientDisplay {
     private long lastFPS;
     
     private int fps;
+    
+    private final FloatBuffer matrix2D = BufferUtils.createFloatBuffer(16);
+    private final FloatBuffer matrix3D = BufferUtils.createFloatBuffer(16);
     
     private float rotquad;
     
@@ -119,8 +126,12 @@ public class ClientDisplay {
         updateFPS();
     }
     
+    Font awtFont = new Font("Times New Roman", Font.BOLD, 24);
+    UnicodeFont font;
+    
     private void renderGraphics() {
         //  Clear screen & depth buffer
+        
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
         GL11.glLoadIdentity();//    Reset View
         
@@ -131,6 +142,7 @@ public class ClientDisplay {
             GL11.glTranslatef(client.getX(), client.getY(), client.getZ());
         }
         //  2D Slick Text: https://github.com/OskarVeerhoek/YouTube-tutorials/blob/master/src/episode_28/TextDemo.java
+        
         GL11.glPushMatrix();
         GL11.glTranslatef(5.0f, 0.0f, -10.0f);// Move Oject
         temp();
@@ -145,6 +157,41 @@ public class ClientDisplay {
         GL11.glTranslatef(0.0f, 0.0f, -20.0f);
         temp();
         GL11.glPopMatrix();
+        
+        // 2D drawing
+        GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);                
+        GL11.glClearDepth(1);
+        GL11.glViewport(0,0,800,600);
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glMatrixMode(GL11.GL_PROJECTION);
+        GL11.glLoadIdentity();
+        GL11.glOrtho(0, 800, 600, 0, 1, -1);
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glLoadIdentity();
+        
+        if (font == null) {
+            font = new UnicodeFont(awtFont);
+            font.getEffects().add(new ColorEffect(java.awt.Color.white));
+            font.addAsciiGlyphs();
+            try {
+                font.loadGlyphs();
+            } catch (SlickException ex) {
+               // Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        //Color.white.bind();
+        font.drawString(100, 100, "Hello", Color.red);
+        
+        // Making sure we can render 3d again
+        GL11.glMatrixMode(GL11.GL_PROJECTION);
+        GL11.glPopMatrix();
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        
+        initializeOpenGLScene(WIDTH, HEIGHT);
+        if (!initializeOpenGL()) {
+            Display.destroy();
+        }
     }
     
     private void temp() {

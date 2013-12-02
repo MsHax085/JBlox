@@ -13,7 +13,7 @@ public class Client {
     
     private final ClientInput ci;
     
-    private final float MOUSE_SENSITIVITY = 0.1f;
+    private final float MOUSE_SENSITIVITY = 0.115f;
 
     private float x = 0.0f;
     private float y = 0.0f;

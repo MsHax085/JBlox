@@ -1,20 +1,11 @@
 
 package jblox;
 
-import java.awt.Font;
-import java.nio.FloatBuffer;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.glu.GLU;
-import org.newdawn.slick.Color;
-import org.newdawn.slick.SlickException;
-import org.newdawn.slick.UnicodeFont;
-import org.newdawn.slick.font.effects.ColorEffect;
 
 /**
  *
@@ -26,55 +17,49 @@ public class ClientDisplay {
     
     private final ClientInput clientInput;
     private final Client client;
+    private final ClientInterface clientInterface;
+    private final GraphicsProcessor gProcessor;
     
     private final int WIDTH = 1000;
     private final int HEIGHT = 600;
     
     private long lastFrame;
     private long lastFPS;
+    private int fpsCounter;
     
     private int fps;
-    
-    private final FloatBuffer matrix2D = BufferUtils.createFloatBuffer(16);
-    private final FloatBuffer matrix3D = BufferUtils.createFloatBuffer(16);
-    
-    private float rotquad;
     
     public ClientDisplay() {
         clientInput = new ClientInput();
         client = new Client(clientInput);
+        clientInterface = new ClientInterface(this);
+        gProcessor = new GraphicsProcessor();
     }
     
-    // -------------------------------------------------------------------------
+    // Main-Methods ------------------------------------------------------------
 
+    /**
+     * Starts the game
+     */
     public void start() {
         
-        initializeDisplay();
-        initializeOpenGLScene(WIDTH, HEIGHT);
-        if (!initializeOpenGL()) {
-            Display.destroy();
-        }
+        // Initialize OpenGL
+        initDisplay();
+        clientInterface.init();
+        gProcessor.initOpenGLScene(WIDTH, HEIGHT);
+        gProcessor.initOpenGL();
         
         Mouse.setGrabbed(true);
         
-        getDelta();
-        lastFPS = getTime();
-        
-        while (!Display.isCloseRequested() && !clientInput.isESCPressed()) {
-
-            final int delta = getDelta();
-            
-            update(delta);
-            renderGraphics();
-            
-            Display.update();
-            Display.sync(60);// Cap at 60fps
-        }
-        
+        // Run Game
+        loop();
         Display.destroy();
     }
     
-    private void initializeDisplay() {
+    /**
+     * Creates the OpenGL display
+     */
+    private void initDisplay() {
         
         final DisplayMode mode = new DisplayMode(WIDTH, HEIGHT);
         
@@ -87,37 +72,37 @@ public class ClientDisplay {
         }
     }
     
-    private void initializeOpenGLScene(final int width, int height) {
+    /**
+     * Defines the game loop
+     */
+    private void loop() {
+        getDelta();
+        lastFPS = getTime();
         
-        if (height == 0) {
-            height = 1;
+        while (!Display.isCloseRequested() && !clientInput.isESCPressed()) {
+
+            final int delta = getDelta();
+            
+            final float x = client.getX();
+            final float y = client.getY();
+            final float z = client.getZ();
+            
+            final float yaw = client.getYaw();
+            final float pitch = client.getPitch();
+            
+            update(delta);
+            gProcessor.draw(x, y, z, yaw, pitch);
+            clientInterface.update();
+            
+            Display.update();
+            Display.sync(60);// Cap at 60fps
         }
-        
-        GL11.glViewport(0, 0, width, height);
-        GL11.glMatrixMode(GL11.GL_PROJECTION);
-        GL11.glLoadIdentity();
-        
-        final float fov = 90.0f;
-        final float aspect_ratio = (float)width/(float)height;
-        final float near = 1.0f;
-        final float far = 100.0f;
-        
-        GLU.gluPerspective(fov, aspect_ratio, near, far);
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-        GL11.glLoadIdentity();
     }
     
-    private boolean initializeOpenGL() {
-        
-        GL11.glShadeModel(GL11.GL_SMOOTH);  // Enable Smooth Shading
-        GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.5f);//    Values when color buffers are cleared
-        GL11.glClearDepth(1.0f);//  Value when depth buffer is cleared
-        GL11.glEnable(GL11.GL_DEPTH_TEST);//    Enable depth testing
-        GL11.glDepthFunc(GL11.GL_LEQUAL);// Type of depth testing
-        GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT, GL11.GL_NICEST);// Perspective calculations
-        return true;
-    }
-    
+    /**
+     * Updates the game
+     * @param delta The time passed between current and last update
+     */
     private void update(final int delta) {
         
         clientInput.checkForInput();
@@ -126,126 +111,32 @@ public class ClientDisplay {
         updateFPS();
     }
     
-    Font awtFont = new Font("Times New Roman", Font.BOLD, 24);
-    UnicodeFont font;
+    // Sub-Methods -------------------------------------------------------------
     
-    private void renderGraphics() {
-        //  Clear screen & depth buffer
-        
-        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-        GL11.glLoadIdentity();//    Reset View
-        
-        //  Set view
-        if (client != null) {
-            GL11.glRotatef(client.getPitch(), 1.0f, 0.0f, 0.0f);
-            GL11.glRotatef(client.getYaw(), 0.0f, 1.0f, 0.0f);
-            GL11.glTranslatef(client.getX(), client.getY(), client.getZ());
+    /**
+     * Updates the FPS
+     */
+    private void updateFPS() {
+        if (getTime() - lastFPS > 250) {
+            fps = fpsCounter * 4;
+            fpsCounter = 0;
+            lastFPS += 250;
         }
-        //  2D Slick Text: https://github.com/OskarVeerhoek/YouTube-tutorials/blob/master/src/episode_28/TextDemo.java
-        
-        GL11.glPushMatrix();
-        GL11.glTranslatef(5.0f, 0.0f, -10.0f);// Move Oject
-        temp();
-        GL11.glPopMatrix();
-        
-        GL11.glPushMatrix();
-        GL11.glTranslatef(-5.0f, 0.0f, -10.0f);
-        temp();
-        GL11.glPopMatrix();
-        
-        GL11.glPushMatrix();
-        GL11.glTranslatef(0.0f, 0.0f, -20.0f);
-        temp();
-        GL11.glPopMatrix();
-        
-        // 2D drawing
-        GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);                
-        GL11.glClearDepth(1);
-        GL11.glViewport(0,0,800,600);
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-        GL11.glMatrixMode(GL11.GL_PROJECTION);
-        GL11.glLoadIdentity();
-        GL11.glOrtho(0, 800, 600, 0, 1, -1);
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-        GL11.glLoadIdentity();
-        
-        if (font == null) {
-            font = new UnicodeFont(awtFont);
-            font.getEffects().add(new ColorEffect(java.awt.Color.white));
-            font.addAsciiGlyphs();
-            try {
-                font.loadGlyphs();
-            } catch (SlickException ex) {
-               // Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        
-        //Color.white.bind();
-        font.drawString(100, 100, "Hello", Color.red);
-        
-        // Making sure we can render 3d again
-        GL11.glMatrixMode(GL11.GL_PROJECTION);
-        GL11.glPopMatrix();
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-        
-        initializeOpenGLScene(WIDTH, HEIGHT);
-        if (!initializeOpenGL()) {
-            Display.destroy();
-        }
+        fpsCounter++;
     }
     
-    private void temp() {
-        GL11.glRotatef(rotquad, 0.0f, 1.0f, 0.0f);	//  Rotate Y-Axis
-        GL11.glRotatef(rotquad, 1.0f, 1.0f, 1.0f);//    Rotate All-Axis
-        GL11.glBegin(GL11.GL_QUADS);
-        {
-            GL11.glColor3f(0.0f,1.0f,0.0f);//   Blue
-            GL11.glVertex3f( 1.0f, 1.0f,-1.0f);//   Top Right (TOP)
-            GL11.glVertex3f(-1.0f, 1.0f,-1.0f);//   Top Left (TOP)
-            GL11.glVertex3f(-1.0f, 1.0f, 1.0f);//   Bottom Left (TOP)
-            GL11.glVertex3f( 1.0f, 1.0f, 1.0f);//   Bottom Right (TOP)
-
-            GL11.glColor3f(1.0f, 0.5f, 0.0f);//   Orange
-            GL11.glVertex3f( 1.0f,-1.0f, 1.0f);//   Top Right (BOTTOM)
-            GL11.glVertex3f(-1.0f,-1.0f, 1.0f);//   Top Left (BOTTOM)
-            GL11.glVertex3f(-1.0f,-1.0f,-1.0f);//   Bottom Left (BOTTOM)
-            GL11.glVertex3f( 1.0f,-1.0f,-1.0f);//   Bottom Right (BOTTOM)
-
-            GL11.glColor3f(1.0f, 0.0f, 0.0f);// Red
-            GL11.glVertex3f( 1.0f, 1.0f, 1.0f);//   Top Right (FRONT)
-            GL11.glVertex3f(-1.0f, 1.0f, 1.0f);//   Top Left (FRONT)
-            GL11.glVertex3f(-1.0f,-1.0f, 1.0f);//   Bottom Left (FRONT)
-            GL11.glVertex3f( 1.0f,-1.0f, 1.0f);//   Bottom Right (FRONT)
-
-            GL11.glColor3f(1.0f, 1.0f, 0.0f);// Yellow
-            GL11.glVertex3f( 1.0f,-1.0f,-1.0f);// Top Right (BACK)
-            GL11.glVertex3f(-1.0f,-1.0f,-1.0f);// Top Left (BACK)
-            GL11.glVertex3f(-1.0f, 1.0f,-1.0f);// Bottom Left (BACK)
-            GL11.glVertex3f( 1.0f, 1.0f,-1.0f);// Bottom Right (BACK)
-
-            GL11.glColor3f(0.0f, 0.0f, 1.0f);// Blue
-            GL11.glVertex3f(-1.0f, 1.0f, 1.0f);// Top Right (LEFT)
-            GL11.glVertex3f(-1.0f, 1.0f,-1.0f);// Top Left (LEFT)
-            GL11.glVertex3f(-1.0f,-1.0f,-1.0f);// Bottom Left (LEFT)
-            GL11.glVertex3f(-1.0f,-1.0f, 1.0f);// Bottom Right (LEFT)
-
-            GL11.glColor3f(1.0f, 0.0f, 1.0f);// Violet
-            GL11.glVertex3f( 1.0f, 1.0f,-1.0f);// Top Right (RIGHT)
-            GL11.glVertex3f( 1.0f, 1.0f, 1.0f);// Top Left (RIGHT)
-            GL11.glVertex3f( 1.0f,-1.0f, 1.0f);// Bottom Left (RIGHT)
-            GL11.glVertex3f( 1.0f,-1.0f,-1.0f);// Bottom Right (RIGHT)
-        }
-        GL11.glEnd();
-        
-        rotquad +=0.1f;
-    }
-    
-    // -------------------------------------------------------------------------
-    
+    /**
+     * Returns the accurate OpenGL time
+     * @return time OpenGL time
+     */
     private long getTime() {
         return (Sys.getTime() * 1000) / Sys.getTimerResolution();
     }
     
+    /**
+     * Returns the time passed between current and last frame
+     * @return time Time difference
+     */
     private int getDelta() {
         final long time = getTime();
         final int delta = (int) (time - lastFrame);
@@ -254,11 +145,19 @@ public class ClientDisplay {
         return delta;
     }
     
-    private void updateFPS() {
-        if (getTime() - lastFPS > 1000) {
-            fps = 0;
-            lastFPS += 1000;
-        }
-        fps++;
+    /**
+     * Returns the calculated FPS
+     * @return fps Calculated FPS
+     */
+    public int getFPS() {
+        return fps;
+    }
+    
+    /**
+     * Returns a Client reference
+     * @return Client Client Reference
+     */
+    public Client getClient() {
+        return client;
     }
 }

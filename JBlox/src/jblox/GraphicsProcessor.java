@@ -1,6 +1,7 @@
 
 package jblox;
 
+import java.util.ArrayList;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 
@@ -66,7 +67,35 @@ public class GraphicsProcessor {
         GL11.glRotatef(yaw, 0.0f, 1.0f, 0.0f);
         GL11.glTranslatef(x, y, z);
         
-        GL11.glPushMatrix();
+        
+        
+        for (int x_axis = 0; x_axis < 16; x_axis++) {
+            
+            for (int z_axis = 0; z_axis < 16; z_axis++) {
+               
+                GL11.glPushMatrix();
+                GL11.glTranslatef(x_axis, 0, z_axis);
+                drawRotatingSquare();
+                GL11.glPopMatrix();
+                
+                boolean onBorder = x_axis == 0 ||
+                                   z_axis == 0 ||
+                                   x_axis == 15 ||
+                                   z_axis == 15;
+                
+                boolean doubleUp = ((x_axis % 2) == 0) &&
+                                   ((z_axis % 2) == 0);
+                
+                if (doubleUp && !onBorder) {
+                    GL11.glPushMatrix();
+                    GL11.glTranslatef(x_axis, 1, z_axis);
+                    drawRotatingSquare();
+                    GL11.glPopMatrix();
+                }
+            }
+        }
+        
+        /*GL11.glPushMatrix();
         GL11.glTranslatef(5.0f, 0.0f, -10.0f);// Move Oject
         drawRotatingSquare();
         GL11.glPopMatrix();
@@ -79,52 +108,53 @@ public class GraphicsProcessor {
         GL11.glPushMatrix();
         GL11.glTranslatef(0.0f, 0.0f, -20.0f);
         drawRotatingSquare();
-        GL11.glPopMatrix();
+        GL11.glPopMatrix();*/
     }
     
     /**
      * Draws a rotating square
      */
     private void drawRotatingSquare() {
-        GL11.glRotatef(rotquad, 0.0f, 1.0f, 0.0f);	// Rotate Y-Axis
-        GL11.glRotatef(rotquad, 1.0f, 1.0f, 1.0f);// Rotate All-Axis
+        //GL11.glRotatef(rotquad, 0.0f, 1.0f, 0.0f);	// Rotate Y-Axis
+        //GL11.glRotatef(rotquad, 1.0f, 1.0f, 1.0f);// Rotate All-Axis
         GL11.glBegin(GL11.GL_QUADS);
         {
+            float width = 0.49f;
             GL11.glColor3f(0.0f,1.0f,0.0f);// Blue
-            GL11.glVertex3f( 1.0f, 1.0f,-1.0f);// Top Right (TOP)
-            GL11.glVertex3f(-1.0f, 1.0f,-1.0f);// Top Left (TOP)
-            GL11.glVertex3f(-1.0f, 1.0f, 1.0f);// Bottom Left (TOP)
-            GL11.glVertex3f( 1.0f, 1.0f, 1.0f);// Bottom Right (TOP)
+            GL11.glVertex3f( width, width,-width);// Top Right (TOP)
+            GL11.glVertex3f(-width, width,-width);// Top Left (TOP)
+            GL11.glVertex3f(-width, width, width);// Bottom Left (TOP)
+            GL11.glVertex3f( width, width, width);// Bottom Right (TOP)
 
             GL11.glColor3f(1.0f, 0.5f, 0.0f);// Orange
-            GL11.glVertex3f( 1.0f,-1.0f, 1.0f);// Top Right (BOTTOM)
-            GL11.glVertex3f(-1.0f,-1.0f, 1.0f);// Top Left (BOTTOM)
-            GL11.glVertex3f(-1.0f,-1.0f,-1.0f);// Bottom Left (BOTTOM)
-            GL11.glVertex3f( 1.0f,-1.0f,-1.0f);// Bottom Right (BOTTOM)
+            GL11.glVertex3f( width,-width, width);// Top Right (BOTTOM)
+            GL11.glVertex3f(-width,-width, width);// Top Left (BOTTOM)
+            GL11.glVertex3f(-width,-width,-width);// Bottom Left (BOTTOM)
+            GL11.glVertex3f( width,-width,-width);// Bottom Right (BOTTOM)
 
             GL11.glColor3f(1.0f, 0.0f, 0.0f);// Red
-            GL11.glVertex3f( 1.0f, 1.0f, 1.0f);// Top Right (FRONT)
-            GL11.glVertex3f(-1.0f, 1.0f, 1.0f);// Top Left (FRONT)
-            GL11.glVertex3f(-1.0f,-1.0f, 1.0f);// Bottom Left (FRONT)
-            GL11.glVertex3f( 1.0f,-1.0f, 1.0f);// Bottom Right (FRONT)
+            GL11.glVertex3f( width, width, width);// Top Right (FRONT)
+            GL11.glVertex3f(-width, width, width);// Top Left (FRONT)
+            GL11.glVertex3f(-width,-width, width);// Bottom Left (FRONT)
+            GL11.glVertex3f( width,-width, width);// Bottom Right (FRONT)
 
             GL11.glColor3f(1.0f, 1.0f, 0.0f);// Yellow
-            GL11.glVertex3f( 1.0f,-1.0f,-1.0f);// Top Right (BACK)
-            GL11.glVertex3f(-1.0f,-1.0f,-1.0f);// Top Left (BACK)
-            GL11.glVertex3f(-1.0f, 1.0f,-1.0f);// Bottom Left (BACK)
-            GL11.glVertex3f( 1.0f, 1.0f,-1.0f);// Bottom Right (BACK)
+            GL11.glVertex3f( width,-width,-width);// Top Right (BACK)
+            GL11.glVertex3f(-width,-width,-width);// Top Left (BACK)
+            GL11.glVertex3f(-width, width,-width);// Bottom Left (BACK)
+            GL11.glVertex3f( width, width,-width);// Bottom Right (BACK)
 
             GL11.glColor3f(0.0f, 0.0f, 1.0f);// Blue
-            GL11.glVertex3f(-1.0f, 1.0f, 1.0f);// Top Right (LEFT)
-            GL11.glVertex3f(-1.0f, 1.0f,-1.0f);// Top Left (LEFT)
-            GL11.glVertex3f(-1.0f,-1.0f,-1.0f);// Bottom Left (LEFT)
-            GL11.glVertex3f(-1.0f,-1.0f, 1.0f);// Bottom Right (LEFT)
+            GL11.glVertex3f(-width, width, width);// Top Right (LEFT)
+            GL11.glVertex3f(-width, width,-width);// Top Left (LEFT)
+            GL11.glVertex3f(-width,-width,-width);// Bottom Left (LEFT)
+            GL11.glVertex3f(-width,-width, width);// Bottom Right (LEFT)
 
             GL11.glColor3f(1.0f, 0.0f, 1.0f);// Violet
-            GL11.glVertex3f( 1.0f, 1.0f,-1.0f);// Top Right (RIGHT)
-            GL11.glVertex3f( 1.0f, 1.0f, 1.0f);// Top Left (RIGHT)
-            GL11.glVertex3f( 1.0f,-1.0f, 1.0f);// Bottom Left (RIGHT)
-            GL11.glVertex3f( 1.0f,-1.0f,-1.0f);// Bottom Right (RIGHT)
+            GL11.glVertex3f( width, width,-width);// Top Right (RIGHT)
+            GL11.glVertex3f( width, width, width);// Top Left (RIGHT)
+            GL11.glVertex3f( width,-width, width);// Bottom Left (RIGHT)
+            GL11.glVertex3f( width,-width,-width);// Bottom Right (RIGHT)
         }
         GL11.glEnd();
         

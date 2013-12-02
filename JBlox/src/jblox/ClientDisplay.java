@@ -65,6 +65,7 @@ public class ClientDisplay {
         
         try {
             Display.setDisplayMode(mode);
+            Display.setTitle("JBlox");
             Display.create();
         } catch (LWJGLException ex) {
             System.out.println("Exception caught while initializing display: " + ex.getMessage());

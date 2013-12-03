@@ -5,7 +5,7 @@ import org.lwjgl.input.Mouse;
 
 /**
  *
- * @author Richard
+ * @author Richard Dahlgren
  * @since 2013-nov-26
  * @version 1.0
  */
@@ -16,7 +16,7 @@ public class Client {
     private final float MOUSE_SENSITIVITY = 0.115f;
 
     private float x = 0.0f;
-    private float y = 0.0f;
+    private float y = -2.0f;
     private float z = 0.0f;
     
     private float xSpeed = 0.0f;

@@ -2,7 +2,7 @@ package jblox;
 
 /**
  *
- * @author Richard
+ * @author Richard Dahlgren
  * @since 2013-nov-25
  * @version 1.0
  */

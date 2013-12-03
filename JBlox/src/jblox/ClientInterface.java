@@ -13,7 +13,7 @@ import org.lwjgl.LWJGLException;
 
 /**
  *
- * @author Richard
+ * @author Richard Dahlgren
  * @since 2013-nov-29
  * @version 1.0
  */

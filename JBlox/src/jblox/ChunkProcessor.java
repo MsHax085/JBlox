@@ -1,6 +1,7 @@
 package jblox;
 
 import org.lwjgl.opengl.GL11;
+import org.newdawn.slick.Color;
 
 /**
  *
@@ -10,6 +11,7 @@ import org.lwjgl.opengl.GL11;
  */
 public class ChunkProcessor {
 
+    private final TextureProcessor textures = new TextureProcessor();
     private final byte CHUNK_RENDER_RADIUS = 4;
     
     /**
@@ -63,45 +65,73 @@ public class ChunkProcessor {
     
     /**
      * Draws a block on matrix
+     * NOTE: Texture coordinates may not be correct (rotation-vice)
      */
     private void drawBlock() {
+        textures.getTexture("").bind();
+        Color.white.bind();
+        
         GL11.glBegin(GL11.GL_QUADS);
         {
-            float width = 0.45f;
-            GL11.glColor3f(0.0f,1.0f,0.0f);// Blue
+            float width = 0.5f;// 0.5f
+            //GL11.glColor3f(0.0f,1.0f,0.0f);// Blue
+            GL11.glTexCoord2f(0.0f, 0.0f);
             GL11.glVertex3f( width, width,-width);// Top Right (TOP)
+            GL11.glTexCoord2f(1.0f, 0.0f);
             GL11.glVertex3f(-width, width,-width);// Top Left (TOP)
+            GL11.glTexCoord2f(1.0f, 1.0f);
             GL11.glVertex3f(-width, width, width);// Bottom Left (TOP)
+            GL11.glTexCoord2f(0.0f, 1.0f);
             GL11.glVertex3f( width, width, width);// Bottom Right (TOP)
 
-            GL11.glColor3f(1.0f, 0.5f, 0.0f);// Orange
+            //GL11.glColor3f(1.0f, 0.5f, 0.0f);// Orange
+            GL11.glTexCoord2f(0.0f, 0.0f);
             GL11.glVertex3f( width,-width, width);// Top Right (BOTTOM)
+            GL11.glTexCoord2f(1.0f, 0.0f);
             GL11.glVertex3f(-width,-width, width);// Top Left (BOTTOM)
+            GL11.glTexCoord2f(1.0f, 1.0f);
             GL11.glVertex3f(-width,-width,-width);// Bottom Left (BOTTOM)
+            GL11.glTexCoord2f(0.0f, 1.0f);
             GL11.glVertex3f( width,-width,-width);// Bottom Right (BOTTOM)
 
-            GL11.glColor3f(1.0f, 0.0f, 0.0f);// Red
+            //GL11.glColor3f(1.0f, 1.0f, 1.0f);// Red
+            GL11.glTexCoord2f(0.0f, 0.0f);
             GL11.glVertex3f( width, width, width);// Top Right (FRONT)
+            GL11.glTexCoord2f(1.0f, 0.0f);
             GL11.glVertex3f(-width, width, width);// Top Left (FRONT)
+            GL11.glTexCoord2f(1.0f, 1.0f);
             GL11.glVertex3f(-width,-width, width);// Bottom Left (FRONT)
+            GL11.glTexCoord2f(0.0f, 1.0f);
             GL11.glVertex3f( width,-width, width);// Bottom Right (FRONT)
 
-            GL11.glColor3f(1.0f, 1.0f, 0.0f);// Yellow
+            //GL11.glColor3f(1.0f, 1.0f, 0.0f);// Yellow
+            GL11.glTexCoord2f(0.0f, 0.0f);
             GL11.glVertex3f( width,-width,-width);// Top Right (BACK)
+            GL11.glTexCoord2f(1.0f, 0.0f);
             GL11.glVertex3f(-width,-width,-width);// Top Left (BACK)
+            GL11.glTexCoord2f(1.0f, 1.0f);
             GL11.glVertex3f(-width, width,-width);// Bottom Left (BACK)
+            GL11.glTexCoord2f(0.0f, 1.0f);
             GL11.glVertex3f( width, width,-width);// Bottom Right (BACK)
 
-            GL11.glColor3f(0.0f, 0.0f, 1.0f);// Blue
+            //GL11.glColor3f(0.0f, 0.0f, 1.0f);// Blue
+            GL11.glTexCoord2f(0.0f, 0.0f);
             GL11.glVertex3f(-width, width, width);// Top Right (LEFT)
+            GL11.glTexCoord2f(1.0f, 0.0f);
             GL11.glVertex3f(-width, width,-width);// Top Left (LEFT)
+            GL11.glTexCoord2f(1.0f, 1.0f);
             GL11.glVertex3f(-width,-width,-width);// Bottom Left (LEFT)
+            GL11.glTexCoord2f(0.0f, 1.0f);
             GL11.glVertex3f(-width,-width, width);// Bottom Right (LEFT)
 
-            GL11.glColor3f(1.0f, 0.0f, 1.0f);// Violet
+            //GL11.glColor3f(1.0f, 0.0f, 1.0f);// Violet
+            GL11.glTexCoord2f(0.0f, 0.0f);
             GL11.glVertex3f( width, width,-width);// Top Right (RIGHT)
+            GL11.glTexCoord2f(1.0f, 0.0f);
             GL11.glVertex3f( width, width, width);// Top Left (RIGHT)
+            GL11.glTexCoord2f(1.0f, 1.0f);
             GL11.glVertex3f( width,-width, width);// Bottom Left (RIGHT)
+            GL11.glTexCoord2f(0.0f, 1.0f);
             GL11.glVertex3f( width,-width,-width);// Bottom Right (RIGHT)
         }
         GL11.glEnd();

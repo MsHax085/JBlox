@@ -26,7 +26,7 @@ public class Client {
     private float yaw = 0.0f;
     private float pitch = 0.0f;
     
-    private final float ACCELERATION = 0.3f;
+    private final float ACCELERATION = 0.3f;// 0.3f
     private final float FRICTION = -0.75f;
     
     public Client(final ClientInput clientInput) {

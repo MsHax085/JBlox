@@ -33,6 +33,7 @@ public class ClientInterface extends Widget {
     private Label label_z;
     private Label label_yaw;
     private Label label_pitch;
+    private Label label_dir;
     
     public ClientInterface(final ClientDisplay display) {
         this.display = display;
@@ -63,6 +64,7 @@ public class ClientInterface extends Widget {
         label_x.adjustSize();
         label_y.adjustSize();
         label_z.adjustSize();
+        label_dir.adjustSize();
         label_yaw.adjustSize();
         label_pitch.adjustSize();
         
@@ -70,8 +72,9 @@ public class ClientInterface extends Widget {
         label_x.setPosition(20, 60);
         label_y.setPosition(20, 80);
         label_z.setPosition(20, 100);
-        label_yaw.setPosition(20, 140);
-        label_pitch.setPosition(20, 160);
+        label_dir.setPosition(20, 140);
+        label_yaw.setPosition(20, 160);
+        label_pitch.setPosition(20, 180);
     }
     
     public void update() {
@@ -85,7 +88,11 @@ public class ClientInterface extends Widget {
         label_x.setText("X-POS: " + client.getX());
         label_y.setText("Y-POS: " + client.getY());
         label_z.setText("Z-POS: " + client.getZ());
-        label_yaw.setText("YAW: " + client.getYaw());
+        
+        final float yaw = client.getYaw();
+        
+        label_dir.setText("DIRECTION: " + getDirection(yaw));
+        label_yaw.setText("YAW: " + yaw);
         label_pitch.setText("PITCH: " + client.getPitch());
         
         gui.update();
@@ -96,6 +103,7 @@ public class ClientInterface extends Widget {
         label_x = new Label();
         label_y = new Label();
         label_z = new Label();
+        label_dir = new Label();
         label_yaw = new Label();
         label_pitch = new Label();
         
@@ -103,7 +111,26 @@ public class ClientInterface extends Widget {
         add(label_x);
         add(label_y);
         add(label_z);
+        add(label_dir);
         add(label_yaw);
         add(label_pitch);
+    }
+    
+    private String getDirection(final float yaw) {
+        
+        String direction = "NORTH";// (yaw > 315 && yaw < 45) || (yaw > -45 && yaw < -315)
+        
+        if ((yaw > 45 && yaw < 135) || (yaw > -315 && yaw < -225)) {
+            direction = "EAST";
+            
+        } else if ((yaw > 135 && yaw < 225) || (yaw > -225 && yaw < -135)) {
+            direction = "SOUTH";
+            
+        } else if ((yaw > 225 && yaw < 315) || (yaw > -135 && yaw < -45)) {
+            direction = "WEST";
+            
+        }
+        
+        return direction;
     }
 }

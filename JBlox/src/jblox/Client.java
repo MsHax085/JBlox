@@ -17,7 +17,7 @@ public class Client {
 
     private float x = 0.0f;
     private float y = -2.0f;
-    private float z = 0.0f;
+    private float z = -70.0f;
     
     private float xSpeed = 0.0f;
     private float ySpeed = 0.0f;
@@ -42,6 +42,18 @@ public class Client {
         {
             yaw += (Mouse.getDX() * MOUSE_SENSITIVITY);
             pitch -= (Mouse.getDY() * MOUSE_SENSITIVITY);
+            
+            if (yaw >= 360) {
+                yaw -= 360;
+            } else if (yaw <= -360) {
+                yaw += 360;
+            }
+            
+            if (pitch >= 360) {
+                pitch -= 360;
+            } else if (pitch <= -360) {
+                pitch += 360;
+            }
             
             final byte xAxisMultiplier = ci.getXAxisMultiplier();
             final byte zAxisMultiplier = ci.getZAxisMultiplier();

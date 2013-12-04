@@ -12,7 +12,7 @@ import org.newdawn.slick.Color;
 public class ChunkProcessor {
 
     private final TextureProcessor textures = new TextureProcessor();
-    private final byte CHUNK_RENDER_RADIUS = 4;
+    private final byte CHUNK_RENDER_RADIUS = 2;
     
     /**
      * Temporary drawing method for plain chunks
@@ -21,8 +21,8 @@ public class ChunkProcessor {
      */
     public void drawChunks(final int x, final int z) {
         
-        final int chunk_x = x / 16;
-        final int chunk_z = z / 16;
+        final int chunk_x = 0 / 16;
+        final int chunk_z = 0 / 16;
         
         final int chunk_x_min = (chunk_x + CHUNK_RENDER_RADIUS) * -1;
         final int chunk_z_min = (chunk_z + CHUNK_RENDER_RADIUS) * -1;
@@ -47,7 +47,7 @@ public class ChunkProcessor {
                                 GL11.glPushMatrix();
                                 {
                                     GL11.glTranslatef(block_x, 0, block_z);
-                                    drawBlock();
+                                    drawBlock(cx_global + block_x, 0, cz_global + block_z, (chunk_x_min * 16), (chunk_x_max * 16), (chunk_z_min * 16), (chunk_z_max * 16));
                                 }
                                 GL11.glPopMatrix();
 
@@ -64,76 +64,165 @@ public class ChunkProcessor {
     }
     
     /**
-     * Draws a block on matrix
-     * NOTE: Texture coordinates may not be correct (rotation-vice)
+     * Draw block to matrix
+     * @param x Block x-coordinate
+     * @param y Block y-coordinate
+     * @param z Block z-coordinate
+     * @param tXMin Temporary Min-Chunk-X-Location
+     * @param tXMax Temporary Max-Chunk-X-Location
+     * @param tZMin Temporary Min-Chunk-Z-Location
+     * @param tZMax Temporary Max-Chunk-Z-Location
      */
-    private void drawBlock() {
-        textures.getTexture("").bind();
+    private void drawBlock(final int x, final int y, final int z, final int tXMin, final int tXMax, final int tZMin, final int tZMax) {
+        
         Color.white.bind();
+        textures.getTexture("").bind();
         
         GL11.glBegin(GL11.GL_QUADS);
         {
             float width = 0.5f;// 0.5f
-            //GL11.glColor3f(0.0f,1.0f,0.0f);// Blue
-            GL11.glTexCoord2f(0.0f, 0.0f);
-            GL11.glVertex3f( width, width,-width);// Top Right (TOP)
-            GL11.glTexCoord2f(1.0f, 0.0f);
-            GL11.glVertex3f(-width, width,-width);// Top Left (TOP)
-            GL11.glTexCoord2f(1.0f, 1.0f);
-            GL11.glVertex3f(-width, width, width);// Bottom Left (TOP)
-            GL11.glTexCoord2f(0.0f, 1.0f);
-            GL11.glVertex3f( width, width, width);// Bottom Right (TOP)
-
-            //GL11.glColor3f(1.0f, 0.5f, 0.0f);// Orange
-            GL11.glTexCoord2f(0.0f, 0.0f);
-            GL11.glVertex3f( width,-width, width);// Top Right (BOTTOM)
-            GL11.glTexCoord2f(1.0f, 0.0f);
-            GL11.glVertex3f(-width,-width, width);// Top Left (BOTTOM)
-            GL11.glTexCoord2f(1.0f, 1.0f);
-            GL11.glVertex3f(-width,-width,-width);// Bottom Left (BOTTOM)
-            GL11.glTexCoord2f(0.0f, 1.0f);
-            GL11.glVertex3f( width,-width,-width);// Bottom Right (BOTTOM)
-
-            //GL11.glColor3f(1.0f, 1.0f, 1.0f);// Red
-            GL11.glTexCoord2f(0.0f, 0.0f);
-            GL11.glVertex3f( width, width, width);// Top Right (FRONT)
-            GL11.glTexCoord2f(1.0f, 0.0f);
-            GL11.glVertex3f(-width, width, width);// Top Left (FRONT)
-            GL11.glTexCoord2f(1.0f, 1.0f);
-            GL11.glVertex3f(-width,-width, width);// Bottom Left (FRONT)
-            GL11.glTexCoord2f(0.0f, 1.0f);
-            GL11.glVertex3f( width,-width, width);// Bottom Right (FRONT)
-
-            //GL11.glColor3f(1.0f, 1.0f, 0.0f);// Yellow
-            GL11.glTexCoord2f(0.0f, 0.0f);
-            GL11.glVertex3f( width,-width,-width);// Top Right (BACK)
-            GL11.glTexCoord2f(1.0f, 0.0f);
-            GL11.glVertex3f(-width,-width,-width);// Top Left (BACK)
-            GL11.glTexCoord2f(1.0f, 1.0f);
-            GL11.glVertex3f(-width, width,-width);// Bottom Left (BACK)
-            GL11.glTexCoord2f(0.0f, 1.0f);
-            GL11.glVertex3f( width, width,-width);// Bottom Right (BACK)
-
-            //GL11.glColor3f(0.0f, 0.0f, 1.0f);// Blue
-            GL11.glTexCoord2f(0.0f, 0.0f);
-            GL11.glVertex3f(-width, width, width);// Top Right (LEFT)
-            GL11.glTexCoord2f(1.0f, 0.0f);
-            GL11.glVertex3f(-width, width,-width);// Top Left (LEFT)
-            GL11.glTexCoord2f(1.0f, 1.0f);
-            GL11.glVertex3f(-width,-width,-width);// Bottom Left (LEFT)
-            GL11.glTexCoord2f(0.0f, 1.0f);
-            GL11.glVertex3f(-width,-width, width);// Bottom Right (LEFT)
-
-            //GL11.glColor3f(1.0f, 0.0f, 1.0f);// Violet
-            GL11.glTexCoord2f(0.0f, 0.0f);
-            GL11.glVertex3f( width, width,-width);// Top Right (RIGHT)
-            GL11.glTexCoord2f(1.0f, 0.0f);
-            GL11.glVertex3f( width, width, width);// Top Left (RIGHT)
-            GL11.glTexCoord2f(1.0f, 1.0f);
-            GL11.glVertex3f( width,-width, width);// Bottom Left (RIGHT)
-            GL11.glTexCoord2f(0.0f, 1.0f);
-            GL11.glVertex3f( width,-width,-width);// Bottom Right (RIGHT)
+            
+            if (!isSolidBlock(x, y + 1, z, tXMin, tXMax, tZMin, tZMax)) {
+                drawTopFace(width);
+            }
+            
+            if (!isSolidBlock(x, y - 1, z, tXMin, tXMax, tZMin, tZMax)) {
+                drawBottomFace(width);
+            }
+                
+            if (!isSolidBlock(x, y, z + 1, tXMin, tXMax, tZMin, tZMax)) {
+                drawFrontFace(width);
+            }
+            
+            if (!isSolidBlock(x, y, z - 1, tXMin, tXMax, tZMin, tZMax)) {
+                drawBackFace(width);
+            }
+            
+            if (!isSolidBlock(x - 1, y, z, tXMin, tXMax, tZMin, tZMax)) {
+                drawLeftFace(width);
+            }
+            
+            if (!isSolidBlock(x + 1, y, z, tXMin, tXMax, tZMin, tZMax)) {
+                drawRightFace(width);
+            }
         }
         GL11.glEnd();
+    }
+    
+    /**
+     * Draw the top block face
+     * @param width Width of block
+     */
+    private void drawTopFace(final float width) {
+        GL11.glTexCoord2f(0.0f, 0.0f);
+        GL11.glVertex3f( width, width,-width);// Top Right (TOP)
+        GL11.glTexCoord2f(1.0f, 0.0f);
+        GL11.glVertex3f(-width, width,-width);// Top Left (TOP)
+        GL11.glTexCoord2f(1.0f, 1.0f);
+        GL11.glVertex3f(-width, width, width);// Bottom Left (TOP)
+        GL11.glTexCoord2f(0.0f, 1.0f);
+        GL11.glVertex3f( width, width, width);// Bottom Right (TOP)
+    }
+    
+    /**
+     * Draw the bottom block face
+     * @param width Width of block
+     */
+    private void drawBottomFace(final float width) {
+        GL11.glTexCoord2f(0.0f, 0.0f);
+        GL11.glVertex3f( width,-width, width);// Top Right (BOTTOM)
+        GL11.glTexCoord2f(1.0f, 0.0f);
+        GL11.glVertex3f(-width,-width, width);// Top Left (BOTTOM)
+        GL11.glTexCoord2f(1.0f, 1.0f);
+        GL11.glVertex3f(-width,-width,-width);// Bottom Left (BOTTOM)
+        GL11.glTexCoord2f(0.0f, 1.0f);
+        GL11.glVertex3f( width,-width,-width);// Bottom Right (BOTTOM)
+    }
+    
+    /**
+     * Draw the front block face
+     * @param width Width of block
+     */
+    private void drawFrontFace(final float width) {
+        GL11.glTexCoord2f(0.0f, 0.0f);
+        GL11.glVertex3f( width, width, width);// Top Right (FRONT)
+        GL11.glTexCoord2f(1.0f, 0.0f);
+        GL11.glVertex3f(-width, width, width);// Top Left (FRONT)
+        GL11.glTexCoord2f(1.0f, 1.0f);
+        GL11.glVertex3f(-width,-width, width);// Bottom Left (FRONT)
+        GL11.glTexCoord2f(0.0f, 1.0f);
+        GL11.glVertex3f( width,-width, width);// Bottom Right (FRONT)
+    }
+    
+    /**
+     * Draw the back block face
+     * @param width Width of block
+     */
+    private void drawBackFace(final float width) {
+        GL11.glTexCoord2f(0.0f, 0.0f);
+        GL11.glVertex3f( width,-width,-width);// Top Right (BACK)
+        GL11.glTexCoord2f(1.0f, 0.0f);
+        GL11.glVertex3f(-width,-width,-width);// Top Left (BACK)
+        GL11.glTexCoord2f(1.0f, 1.0f);
+        GL11.glVertex3f(-width, width,-width);// Bottom Left (BACK)
+        GL11.glTexCoord2f(0.0f, 1.0f);
+        GL11.glVertex3f( width, width,-width);// Bottom Right (BACK)
+    }
+    
+    /**
+     * Draw the left block face
+     * @param width Width of block
+     */
+    private void drawLeftFace(final float width) {
+        GL11.glTexCoord2f(0.0f, 0.0f);
+        GL11.glVertex3f(-width, width, width);// Top Right (LEFT)
+        GL11.glTexCoord2f(1.0f, 0.0f);
+        GL11.glVertex3f(-width, width,-width);// Top Left (LEFT)
+        GL11.glTexCoord2f(1.0f, 1.0f);
+        GL11.glVertex3f(-width,-width,-width);// Bottom Left (LEFT)
+        GL11.glTexCoord2f(0.0f, 1.0f);
+        GL11.glVertex3f(-width,-width, width);// Bottom Right (LEFT)
+    }
+    
+    /**
+     * Draw the right block face
+     * @param width Width of block
+     */
+    private void drawRightFace(final float width) {
+        GL11.glTexCoord2f(0.0f, 0.0f);
+        GL11.glVertex3f( width, width,-width);// Top Right (RIGHT)
+        GL11.glTexCoord2f(1.0f, 0.0f);
+        GL11.glVertex3f( width, width, width);// Top Left (RIGHT)
+        GL11.glTexCoord2f(1.0f, 1.0f);
+        GL11.glVertex3f( width,-width, width);// Bottom Left (RIGHT)
+        GL11.glTexCoord2f(0.0f, 1.0f);
+        GL11.glVertex3f( width,-width,-width);// Bottom Right (RIGHT)
+    }
+    
+    /**
+     * If there's a solid block at specified coordinates
+     * @param x     Block X-Position
+     * @param y     Block Y-Position
+     * @param z     Block Z-Position
+     * @param tXMin Temporary Min-Chunk-X-Location
+     * @param tXMax Temporary Max-Chunk-X-Location
+     * @param tZMin Temporary Min-Chunk-Z-Location
+     * @param tZMax Temporary Max-Chunk-Z-Location
+     * @return If solid block
+     */
+    private boolean isSolidBlock(final int x, final int y, final int z, final int tXMin, final int tXMax, final int tZMin, final int tZMax) {
+        
+        /* 
+            Temporary Code
+        */
+        if (y == 0) {
+            if (x >= tXMin && x < tXMax) {
+                if (z >= tZMin && z < tZMax) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
     }
 }

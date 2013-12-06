@@ -21,8 +21,8 @@ public class ChunkProcessor {
      */
     public void drawChunks(final int x, final int z) {
         
-        final int chunk_x = 0 / 16;
-        final int chunk_z = 0 / 16;
+        final int chunk_x = x / 16;
+        final int chunk_z = z / 16;
         
         final int chunk_x_min = (chunk_x + CHUNK_RENDER_RADIUS) * -1;
         final int chunk_z_min = (chunk_z + CHUNK_RENDER_RADIUS) * -1;

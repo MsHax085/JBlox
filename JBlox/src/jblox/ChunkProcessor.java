@@ -12,7 +12,7 @@ import org.newdawn.slick.Color;
 public class ChunkProcessor {
 
     private final TextureProcessor textures = new TextureProcessor();
-    private final byte CHUNK_RENDER_RADIUS = 2;
+    private final byte CHUNK_RENDER_RADIUS = 1;
     
     /**
      * Temporary drawing method for plain chunks
@@ -21,8 +21,8 @@ public class ChunkProcessor {
      */
     public void drawChunks(final int x, final int z) {
         
-        final int chunk_x = x / 16;
-        final int chunk_z = z / 16;
+        final int chunk_x = 0 / 16;
+        final int chunk_z = 0 / 16;
         
         final int chunk_x_min = (chunk_x + CHUNK_RENDER_RADIUS) * -1;
         final int chunk_z_min = (chunk_z + CHUNK_RENDER_RADIUS) * -1;
@@ -40,19 +40,22 @@ public class ChunkProcessor {
                 {
                     GL11.glTranslatef(cx_global, 0, cz_global);
 
-                    for (int block_x = 0; block_x < 16; block_x++) {
+                    for (int block_y = 0; block_y < 16; block_y++) {
 
-                        for (int block_z = 0; block_z < 16; block_z++) {
+                        for (int block_x = 0; block_x < 16; block_x++) {
 
-                                GL11.glPushMatrix();
-                                {
-                                    GL11.glTranslatef(block_x, 0, block_z);
-                                    drawBlock(cx_global + block_x, 0, cz_global + block_z, (chunk_x_min * 16), (chunk_x_max * 16), (chunk_z_min * 16), (chunk_z_max * 16));
-                                }
-                                GL11.glPopMatrix();
+                            for (int block_z = 0; block_z < 16; block_z++) {
+
+                                    GL11.glPushMatrix();
+                                    {
+                                        GL11.glTranslatef(block_x, block_y, block_z);
+                                        drawBlock(cx_global + block_x, block_y, cz_global + block_z, (chunk_x_min * 16), (chunk_x_max * 16), (chunk_z_min * 16), (chunk_z_max * 16));
+                                    }
+                                    GL11.glPopMatrix();
+
+                            }
 
                         }
-
                     }
                 }
                 
@@ -215,7 +218,7 @@ public class ChunkProcessor {
         /* 
             Temporary Code
         */
-        if (y == 0) {
+        if (y < 16 && y > -1) {
             if (x >= tXMin && x < tXMax) {
                 if (z >= tZMin && z < tZMax) {
                     return true;

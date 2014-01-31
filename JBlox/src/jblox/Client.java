@@ -16,8 +16,8 @@ public class Client {
     private final float MOUSE_SENSITIVITY = 0.115f;
 
     private float x = 0.0f;
-    private float y = -2.0f;
-    private float z = -70.0f;
+    private float y = -20.0f;
+    private float z = 0.0f;
     
     private float xSpeed = 0.0f;
     private float ySpeed = 0.0f;

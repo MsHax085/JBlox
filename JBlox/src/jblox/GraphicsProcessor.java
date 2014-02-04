@@ -59,6 +59,12 @@ public class GraphicsProcessor {
         GL11.glEnable(GL11.GL_DEPTH_TEST);// Enable depth testing
         GL11.glDepthFunc(GL11.GL_LEQUAL);// Type of depth testing
         GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT, GL11.GL_NICEST);// Perspective calculations
+        
+        GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+        GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
+        GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+        
+        chunkProcessor.generateChunks();
     }
     
     private void initFog() {
@@ -81,7 +87,7 @@ public class GraphicsProcessor {
     
     // Rendering methods -------------------------------------------------------
     
-    public void draw(final float x, final float y, final float z, final float yaw, final float pitch) {
+    public void draw(final float x, final float y, final float z, final float yaw, final float pitch) {// Player position
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);// Clear screen & depth buffer
         GL11.glLoadIdentity();// Reset View
         

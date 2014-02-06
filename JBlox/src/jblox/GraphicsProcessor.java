@@ -4,7 +4,6 @@ package jblox;
 import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL31;
 import org.lwjgl.util.glu.GLU;
 
 /**
@@ -15,16 +14,13 @@ import org.lwjgl.util.glu.GLU;
  */
 public class GraphicsProcessor {
     
-    private final boolean CULL_FACE = false;
-    private final boolean COLOR_ARRAY = false;// DEBUG ONLY
-    
     private final ChunkProcessor chunkProcessor = new ChunkProcessor();
     
     private final float FOV = 90.0f;
     private final float NEAR_VIEW_DISTANCE = 1.0f;
     
     // Drawing outside this distance may cause objects to disappear/flicker on screen at certain angle
-    private final float FAR_VIEW_DISTANCE = 100.0f;
+    private final float FAR_VIEW_DISTANCE = 50.0f;
     
     private final float NEAR_FOG = FAR_VIEW_DISTANCE - 10;
     private final float FAR_FOG = FAR_VIEW_DISTANCE;
@@ -51,7 +47,7 @@ public class GraphicsProcessor {
         GLU.gluPerspective(FOV, aspect_ratio, NEAR_VIEW_DISTANCE, FAR_VIEW_DISTANCE);
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glLoadIdentity();
-        //initFog();
+        initFog();
     }
 
     /**
@@ -63,10 +59,6 @@ public class GraphicsProcessor {
         GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.5f);// Values when color buffers are cleared
         GL11.glClearDepth(1.0f);// Value when depth buffer is cleared
         
-        if (CULL_FACE) {
-            GL11.glEnable(GL11.GL_CULL_FACE);
-        }
-        
         GL11.glEnable(GL11.GL_DEPTH_TEST);// Enable depth testing
         GL11.glDepthFunc(GL11.GL_LEQUAL);// Type of depth testing
         GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT, GL11.GL_NICEST);// Perspective calculations
@@ -74,14 +66,28 @@ public class GraphicsProcessor {
         // Enable VBO
         GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
         GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
+        GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
         
-        if (COLOR_ARRAY) {// DEBUG
-            GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-        } else {
-            GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-        }
+        // Enable Lightning
+        GL11.glEnable(GL11.GL_LIGHTING);
+        GL11.glEnable(GL11.GL_LIGHT0);
+
+        GL11.glLight(GL11.GL_LIGHT0, GL11.GL_SPECULAR, floatBuffer(1.0f, 1.0f, 1.0f, 1.0f));
+        GL11.glLight(GL11.GL_LIGHT0, GL11.GL_DIFFUSE, floatBuffer(1.0f, 1.0f, 1.0f, 1.0f));
+
+        GL11.glLightModel(GL11.GL_LIGHT_MODEL_AMBIENT, floatBuffer(0.6f, 0.6f, 0.6f, 1.0f));
         
         chunkProcessor.generateChunks();
+    }
+    
+    private FloatBuffer floatBuffer(final float a, final float b, final float c, final float d) {
+        final float[] data = new float[]{a,b,c,d};
+        final FloatBuffer buffer = BufferUtils.createFloatBuffer(data.length);
+        {
+            buffer.put(data);
+            buffer.flip();
+        }
+        return buffer;
     }
     
     private void initFog() {
@@ -112,6 +118,8 @@ public class GraphicsProcessor {
         GL11.glRotatef(pitch, 1.0f, 0.0f, 0.0f);
         GL11.glRotatef(yaw, 0.0f, 1.0f, 0.0f);
         GL11.glTranslatef(x, y, z);
+        
+        GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, floatBuffer(x, 256, z, 0.0f));
         
         chunkProcessor.drawChunks((int) x, (int) z);
     }

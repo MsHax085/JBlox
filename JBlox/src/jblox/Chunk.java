@@ -17,7 +17,7 @@ public class Chunk {
     
     private final TextureProcessor textures = new TextureProcessor();
 
-    private final short HEIGHT = 256;// Chunk height
+    private final short HEIGHT = 16;// Chunk height
     private short highestBlockY = 0;
     
     // Mini-chunks
@@ -68,8 +68,7 @@ public class Chunk {
     }
     
     private void generateNoise() {
-        // TODO: DETERMINE SIZE FOR EACH VBO, WHEN CHANGING WORLD HEIGHT
-        for (short y = 0; y < 16; y++) {// HEIGHT = 256, 17 = temp
+        for (short y = 0; y < HEIGHT; y++) {
             for (byte x = 0; x < 16; x++) {
                 for (byte z = 0; z < 16; z++) {
                     
@@ -147,7 +146,7 @@ public class Chunk {
         }
         
         final FloatBuffer quadBuffer = BufferUtils.createFloatBuffer(quadBufferLength);
-        final float WIDTH = 0.4f;// 0.5f
+        final float WIDTH = 0.5f;// 0.5f
         
         if (generateFrontQuad) {
             quadBuffer.put(generateFrontQuad(x, y, z, WIDTH));
@@ -182,10 +181,10 @@ public class Chunk {
         
         final float[] backQuad = {
         //      x          y           z    nx      ny     nz   tx     ty
-         width + x,  width + y,  width + z,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,
-        -width + x,  width + y,  width + z,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
-        -width + x, -width + y,  width + z,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,
-         width + x, -width + y,  width + z,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f};
+         width + x,  width + y,  width + z,  0.0f,  0.55f,  1.0f,  1.0f,  0.0f,
+        -width + x,  width + y,  width + z,  0.0f,  0.55f,  1.0f,  0.0f,  0.0f,
+        -width + x, -width + y,  width + z,  0.0f,  0.55f,  1.0f,  0.0f,  1.0f,
+         width + x, -width + y,  width + z,  0.0f,  0.55f,  1.0f,  1.0f,  1.0f};
         
         return backQuad;
     }
@@ -194,10 +193,10 @@ public class Chunk {
         
         final float[] frontQuad = {
         //      x          y           z    nx      ny     nz   tx     ty
-         width + x,  width + y, -width + z,  0.0f,  0.0f, -1.0f,  0.0f,  0.0f,
-        -width + x,  width + y, -width + z,  0.0f,  0.0f, -1.0f,  1.0f,  0.0f,
-        -width + x, -width + y, -width + z,  0.0f,  0.0f, -1.0f,  1.0f,  1.0f,
-         width + x, -width + y, -width + z,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f};
+         width + x,  width + y, -width + z,  0.0f,  0.55f, -1.0f,  0.0f,  0.0f,
+        -width + x,  width + y, -width + z,  0.0f,  0.55f, -1.0f,  1.0f,  0.0f,
+        -width + x, -width + y, -width + z,  0.0f,  0.55f, -1.0f,  1.0f,  1.0f,
+         width + x, -width + y, -width + z,  0.0f,  0.55f, -1.0f,  0.0f,  1.0f};
 
         return frontQuad;
     }
@@ -206,10 +205,10 @@ public class Chunk {
         
         final float[] leftQuad = {
         //      x          y           z    nx      ny     nz   tx     ty
-        -width + x,  width + y, -width + z, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-        -width + x,  width + y,  width + z, -1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-        -width + x, -width + y,  width + z, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-        -width + x, -width + y, -width + z, -1.0f,  0.0f,  0.0f,  0.0f,  1.0f};
+        -width + x,  width + y, -width + z, -1.0f,  0.55f,  0.0f,  0.0f,  0.0f,
+        -width + x,  width + y,  width + z, -1.0f,  0.55f,  0.0f,  1.0f,  0.0f,
+        -width + x, -width + y,  width + z, -1.0f,  0.55f,  0.0f,  1.0f,  1.0f,
+        -width + x, -width + y, -width + z, -1.0f,  0.55f,  0.0f,  0.0f,  1.0f};
 
         return leftQuad;
     }
@@ -218,10 +217,10 @@ public class Chunk {
         
         final float[] rightQuad = {
         //      x          y           z    nx      ny     nz   tx     ty
-        width + x,  width + y, -width + z,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,
-        width + x,  width + y,  width + z,  1.0f,  0.0f,  0.0f,  0.0f,  0.0f,
-        width + x, -width + y,  width + z,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,
-        width + x, -width + y, -width + z,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f};
+        width + x,  width + y, -width + z,  1.0f,  0.55f,  0.0f,  1.0f,  0.0f,
+        width + x,  width + y,  width + z,  1.0f,  0.55f,  0.0f,  0.0f,  0.0f,
+        width + x, -width + y,  width + z,  1.0f,  0.55f,  0.0f,  0.0f,  1.0f,
+        width + x, -width + y, -width + z,  1.0f,  0.55f,  0.0f,  1.0f,  1.0f};
 
         return rightQuad;
     }

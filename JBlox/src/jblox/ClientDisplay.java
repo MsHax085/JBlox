@@ -96,7 +96,7 @@ public class ClientDisplay {
             clientInterface.update();
             
             Display.update();
-            Display.sync(60);// Cap at 60fps
+            Display.sync(120);// Cap at 120fps
         }
         
         gProcessor.clear();// Dispose VBO's

@@ -11,7 +11,6 @@ import org.newdawn.slick.Color;
  */
 public class ChunkProcessor {
 
-    private final TextureProcessor textures = new TextureProcessor();
     private final Chunk chunk = new Chunk();
     private final byte CHUNK_RENDER_RADIUS = 1;
     
@@ -26,8 +25,8 @@ public class ChunkProcessor {
      */
     public void drawChunks(final int x, final int z) {// Player position
         
-        final int chunk_x = 0 / 16;
-        final int chunk_z = 0 / 16;
+        final int chunk_x = x / 16;
+        final int chunk_z = z / 16;
         
         // Visible Chunks
         final int chunk_x_min = (chunk_x + CHUNK_RENDER_RADIUS) * -1;
@@ -36,8 +35,8 @@ public class ChunkProcessor {
         final int chunk_z_max = (chunk_z - CHUNK_RENDER_RADIUS) * -1;
         
         // Loop through visible chunks & render
-        for (int cx = chunk_x_min; cx < chunk_x_min + 1; cx++) {// Change to chunk_x_max
-            for (int cz = chunk_z_min; cz < chunk_z_min + 1; cz++) {// Change to chunk_x_max
+        for (int cx = chunk_x_min; cx < chunk_x_max; cx++) {// Change to chunk_x_max
+            for (int cz = chunk_z_min; cz < chunk_z_max; cz++) {// Change to chunk_x_max
             
                 final int cx_global = cx * 16;
                 final int cz_global = cz * 16;

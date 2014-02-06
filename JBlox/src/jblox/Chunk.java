@@ -6,6 +6,7 @@ import java.nio.IntBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
+import org.newdawn.slick.Color;
 
 /**
  *
@@ -14,12 +15,14 @@ import org.lwjgl.opengl.GL15;
  * @version 1.0
  */
 public class Chunk {
+    
+    private final TextureProcessor textures = new TextureProcessor();
 
     private final short HEIGHT = 256;// Chunk height
     private short highestBlockY = 0;
     
     // Mini-chunks
-    private final int vboBufferLength = (10 * 4 * 6) * 16 * 16 * 16;// * 16 * 16 * 16;// Data * Vertices * Faces * X_Length * Y_Length * Z_Length
+    private final int vboBufferLength = (10 * 4 * 6) * 16 * 16 * 16;// Data * Vertices * Faces * X_Length * Y_Length * Z_Length
     private final int[] vboHandles = new int[16];
     
     // Generated noise-data + loaded & modified data
@@ -44,13 +47,15 @@ public class Chunk {
                 break;
             }
             
+            Color.white.bind();
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, textures.getTexture("STONE").getTextureID());
             GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, handle);
             
             GL11.glVertexPointer(3, GL11.GL_FLOAT, 40, 0);
             GL11.glNormalPointer(GL11.GL_FLOAT, 40, 12);
-            GL11.glColorPointer(4, GL11.GL_FLOAT, 40, 24);
+            GL11.glTexCoordPointer(4, GL11.GL_FLOAT, 40, 24);
+            //GL11.glColorPointer(4, GL11.GL_FLOAT, 40, 24);
             
-            //GL11.glDrawArrays(GL11.GL_QUADS, 0, (16 * 16 * 16) / 10);
             GL11.glDrawArrays(GL11.GL_QUADS, 0, vboBufferLength / 10);
         }
         
@@ -65,7 +70,7 @@ public class Chunk {
     }
     
     private void generateNoise() {
-        for (short y = 0; y < 35; y++) {// HEIGHT = 256, 35 = temp
+        for (short y = 0; y < 17; y++) {// HEIGHT = 256, 17 = temp
             for (byte x = 0; x < 16; x++) {
                 for (byte z = 0; z < 16; z++) {
                     

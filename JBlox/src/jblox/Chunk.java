@@ -39,7 +39,7 @@ public class Chunk {
         
         for (int handle : vboHandles) {
             
-            if (!(handle > -1)) {
+            if (!(handle > 0)) {
                 break;
             }
             
@@ -81,7 +81,7 @@ public class Chunk {
         
         for (int handle : vboHandles) {
             
-            if (!(handle > -1)) {
+            if (!(handle > 0)) {
                 break;
             }
             

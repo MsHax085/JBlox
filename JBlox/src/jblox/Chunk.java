@@ -47,14 +47,14 @@ public class Chunk {
                 break;
             }
             
-            Color.white.bind();
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, textures.getTexture("STONE").getTextureID());
+            //Color.white.bind();
+            //GL11.glBindTexture(GL11.GL_TEXTURE_2D, textures.getTexture("STONE").getTextureID());
             GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, handle);
             
             GL11.glVertexPointer(3, GL11.GL_FLOAT, 40, 0);
             GL11.glNormalPointer(GL11.GL_FLOAT, 40, 12);
-            GL11.glTexCoordPointer(4, GL11.GL_FLOAT, 40, 24);
-            //GL11.glColorPointer(4, GL11.GL_FLOAT, 40, 24);
+            //GL11.glTexCoordPointer(4, GL11.GL_FLOAT, 40, 24);
+            GL11.glColorPointer(4, GL11.GL_FLOAT, 40, 24);
             
             GL11.glDrawArrays(GL11.GL_QUADS, 0, vboBufferLength / 10);
         }
@@ -148,29 +148,30 @@ public class Chunk {
         }
         
         final FloatBuffer quadBuffer = BufferUtils.createFloatBuffer(quadBufferLength);
+        final float WIDTH = 0.4f;// 0.5f
         
         if (generateBackQuad) {
-            quadBuffer.put(generateBackQuad(x, y, z, 1.0f));
+            quadBuffer.put(generateBackQuad(x, y, z, WIDTH));
         }
         
         if (generateFrontQuad) {
-            quadBuffer.put(generateFrontQuad(x, y, z, 1.0f));
+            quadBuffer.put(generateFrontQuad(x, y, z, WIDTH));
         }
         
         if (generateLeftQuad) {
-            quadBuffer.put(generateLeftQuad(x, y, z, 1.0f));
+            quadBuffer.put(generateLeftQuad(x, y, z, WIDTH));
         }
         
         if (generateRightQuad) {
-            quadBuffer.put(generateRightQuad(x, y, z, 1.0f));
+            quadBuffer.put(generateRightQuad(x, y, z, WIDTH));
         }
         
         if (generateTopQuad) {
-            quadBuffer.put(generateTopQuad(x, y, z, 1.0f));
+            quadBuffer.put(generateTopQuad(x, y, z, WIDTH));
         }
         
         if (generateBottomQuad) {
-            quadBuffer.put(generateBottomQuad(x, y, z, 1.0f));
+            quadBuffer.put(generateBottomQuad(x, y, z, WIDTH));
         }
         
         quadBuffer.rewind();
@@ -181,7 +182,7 @@ public class Chunk {
     private float[] generateBackQuad(final byte x, final byte y, final byte z, final float width) {
         
         final float[] backQuad = {
-        //   x      y      z      nx     ny     nz     r      g      b      a
+        //   x          y           z      nx     ny     nz   tex1   tex2   tex3   tex4
          width + x,  width + y,  width + z,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,
         -width + x,  width + y,  width + z,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,
         -width + x, -width + y,  width + z,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,
@@ -193,7 +194,7 @@ public class Chunk {
     private float[] generateFrontQuad(final byte x, final byte y, final byte z, final float width) {
         
         final float[] frontQuad = {
-        //   x      y      z      nx     ny     nz     r      g      b      a
+        //   x          y           z      nx     ny     nz   tex1   tex2   tex3   tex4
          width + x,  width + y, -width + z,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,  1.0f,
         -width + x,  width + y, -width + z,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,  1.0f,
         -width + x, -width + y, -width + z,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,  1.0f,
@@ -205,7 +206,7 @@ public class Chunk {
     private float[] generateLeftQuad(final byte x, final byte y, final byte z, final float width) {
         
         final float[] leftQuad = {
-        //   x      y      z      nx     ny     nz     r      g      b      a
+        //   x          y           z      nx     ny     nz   tex1   tex2   tex3   tex4
         -width + x,  width + y, -width + z, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,  1.0f,  1.0f,
         -width + x,  width + y,  width + z, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,  1.0f,  1.0f,
         -width + x, -width + y,  width + z, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,  1.0f,  1.0f,
@@ -217,7 +218,7 @@ public class Chunk {
     private float[] generateRightQuad(final byte x, final byte y, final byte z, final float width) {
         
         final float[] rightQuad = {
-        //   x      y      z      nx     ny     nz     r      g      b      a
+        //   x          y           z      nx     ny     nz   tex1   tex2   tex3   tex4
         width + x,  width + y, -width + z,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
         width + x,  width + y,  width + z,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
         width + x, -width + y,  width + z,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
@@ -229,7 +230,7 @@ public class Chunk {
     private float[] generateTopQuad(final byte x, final byte y, final byte z, final float width) {
         
         final float[] topQuad = {
-        //   x      y      z      nx     ny     nz     r      g      b      a
+        //   x          y           z      nx     ny     nz   tex1   tex2   tex3   tex4
         -width + x,  width + y, -width + z,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,  0.0f,  1.0f,
         -width + x,  width + y,  width + z,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,  0.0f,  1.0f,
          width + x,  width + y,  width + z,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,  0.0f,  1.0f,
@@ -241,7 +242,7 @@ public class Chunk {
     private float[] generateBottomQuad(final byte x, final byte y, final byte z, final float width) {
         
         final float[] bottomQuad = {
-        //   x      y      z      nx     ny     nz     r      g      b      a
+        //   x          y           z      nx     ny     nz   tex1   tex2   tex3   tex4
         -width + x, -width + y, -width + z,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
         -width + x, -width + y,  width + z,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
          width + x, -width + y,  width + z,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
@@ -252,5 +253,17 @@ public class Chunk {
     
     private int coordsToIndex(final byte x, final short y, final byte z) {// Coords in chunk
         return (x * 16 + z) * HEIGHT + y;
+    }
+    
+    public void clear() {
+        
+        for (int handle : vboHandles) {
+            
+            if (!(handle > 0)) {
+                break;
+            }
+            
+            GL15.glDeleteBuffers(handle);
+        }
     }
 }

@@ -25,8 +25,8 @@ public class ChunkProcessor {
      */
     public void drawChunks(final int x, final int z) {// Player position
         
-        final int chunk_x = x / 16;
-        final int chunk_z = z / 16;
+        final int chunk_x = 0 / 16;
+        final int chunk_z = 0 / 16;
         
         // Visible Chunks
         final int chunk_x_min = (chunk_x + CHUNK_RENDER_RADIUS) * -1;
@@ -53,5 +53,9 @@ public class ChunkProcessor {
             }
             
         }
+    }
+    
+    public void clear() {
+        chunk.clear();
     }
 }

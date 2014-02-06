@@ -16,12 +16,16 @@ import org.lwjgl.util.glu.GLU;
 public class GraphicsProcessor {
     
     private final boolean CULL_FACE = false;
+    private final boolean COLOR_ARRAY = true;// DEBUG ONLY
     
     private final ChunkProcessor chunkProcessor = new ChunkProcessor();
     
     private final float FOV = 90.0f;
     private final float NEAR_VIEW_DISTANCE = 1.0f;
-    private final float FAR_VIEW_DISTANCE = 100.0f;// WARNING: Drawing outside this distance may cause objects to disappear on screen (temp)
+    
+    // Drawing outside this distance may cause objects to disappear/flicker on screen at certain angle
+    private final float FAR_VIEW_DISTANCE = 100.0f;
+    
     private final float NEAR_FOG = FAR_VIEW_DISTANCE - 10;
     private final float FAR_FOG = FAR_VIEW_DISTANCE;
     
@@ -54,7 +58,6 @@ public class GraphicsProcessor {
      * Initializes the OpenGL graphics rendering.
      */
     public void initOpenGL() {
-        GL11.glEnable(GL31.GL_PRIMITIVE_RESTART);
         GL11.glEnable(GL11.GL_TEXTURE_2D);// Enable 2D texture mapping
         GL11.glShadeModel(GL11.GL_SMOOTH);// Enable Smooth Shading
         GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.5f);// Values when color buffers are cleared
@@ -68,10 +71,15 @@ public class GraphicsProcessor {
         GL11.glDepthFunc(GL11.GL_LEQUAL);// Type of depth testing
         GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT, GL11.GL_NICEST);// Perspective calculations
         
+        // Enable VBO
         GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
         GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
-        //GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-        GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+        
+        if (COLOR_ARRAY) {// DEBUG
+            GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+        } else {
+            GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+        }
         
         chunkProcessor.generateChunks();
     }
@@ -106,5 +114,9 @@ public class GraphicsProcessor {
         GL11.glTranslatef(x, y, z);
         
         chunkProcessor.drawChunks((int) x, (int) z);
+    }
+    
+    public void clear() {
+        chunkProcessor.clear();
     }
 }

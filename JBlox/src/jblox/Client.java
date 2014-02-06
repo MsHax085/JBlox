@@ -27,7 +27,7 @@ public class Client {
     private float pitch = 0.0f;
     
     private final float ACCELERATION = 0.3f;// 0.3f
-    private final float FRICTION = -0.75f;
+    private final float FRICTION = -0.95f;// -0.75f
     
     public Client(final ClientInput clientInput) {
         this.ci = clientInput;

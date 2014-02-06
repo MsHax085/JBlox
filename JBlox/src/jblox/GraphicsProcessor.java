@@ -16,7 +16,7 @@ import org.lwjgl.util.glu.GLU;
 public class GraphicsProcessor {
     
     private final boolean CULL_FACE = false;
-    private final boolean COLOR_ARRAY = true;// DEBUG ONLY
+    private final boolean COLOR_ARRAY = false;// DEBUG ONLY
     
     private final ChunkProcessor chunkProcessor = new ChunkProcessor();
     

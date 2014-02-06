@@ -19,6 +19,7 @@ public class Chunk {
     private short highestBlockY = 0;
     
     // Mini-chunks
+    private final int vboBufferLength = (10 * 4 * 6) * 16 * 16 * 16;// * 16 * 16 * 16;// Data * Vertices * Faces * X_Length * Y_Length * Z_Length
     private final int[] vboHandles = new int[16];
     
     // Generated noise-data + loaded & modified data
@@ -49,7 +50,8 @@ public class Chunk {
             GL11.glNormalPointer(GL11.GL_FLOAT, 40, 12);
             GL11.glColorPointer(4, GL11.GL_FLOAT, 40, 24);
             
-            GL11.glDrawArrays(GL11.GL_QUADS, 0, (16 * 16 * 16) / 10);
+            //GL11.glDrawArrays(GL11.GL_QUADS, 0, (16 * 16 * 16) / 10);
+            GL11.glDrawArrays(GL11.GL_QUADS, 0, vboBufferLength / 10);
         }
         
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
@@ -85,7 +87,7 @@ public class Chunk {
                 break;
             }
             
-            final FloatBuffer vboBuffer = BufferUtils.createFloatBuffer(16 * 16 * 16);
+            final FloatBuffer vboBuffer = BufferUtils.createFloatBuffer(vboBufferLength);
             
             for (byte y = 0; y < 16; y++) {
                 for (byte x = 0; x < 16; x++) {
@@ -143,100 +145,102 @@ public class Chunk {
         final FloatBuffer quadBuffer = BufferUtils.createFloatBuffer(quadBufferLength);
         
         if (generateBackQuad) {
-            quadBuffer.put(generateBackQuad(z, 1.0f));
+            quadBuffer.put(generateBackQuad(x, y, z, 1.0f));
         }
         
         if (generateFrontQuad) {
-            quadBuffer.put(generateFrontQuad(z, 1.0f));
+            quadBuffer.put(generateFrontQuad(x, y, z, 1.0f));
         }
         
         if (generateLeftQuad) {
-            quadBuffer.put(generateLeftQuad(x, 1.0f));
+            quadBuffer.put(generateLeftQuad(x, y, z, 1.0f));
         }
         
         if (generateRightQuad) {
-            quadBuffer.put(generateRightQuad(x, 1.0f));
+            quadBuffer.put(generateRightQuad(x, y, z, 1.0f));
         }
         
         if (generateTopQuad) {
-            quadBuffer.put(generateTopQuad(y, 1.0f));
+            quadBuffer.put(generateTopQuad(x, y, z, 1.0f));
         }
         
         if (generateBottomQuad) {
-            quadBuffer.put(generateBottomQuad(y, 1.0f));
+            quadBuffer.put(generateBottomQuad(x, y, z, 1.0f));
         }
+        
+        quadBuffer.rewind();
         
         return quadBuffer;
     }
     
-    private float[] generateBackQuad(final byte z, final float width) {
+    private float[] generateBackQuad(final byte x, final byte y, final byte z, final float width) {
         
         final float[] backQuad = {
         //   x      y      z      nx     ny     nz     r      g      b      a
-         width,  width,  width + z,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,
-        -width,  width,  width + z,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,
-        -width, -width,  width + z,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,
-         width, -width,  width + z,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f};
-
+         width + x,  width + y,  width + z,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,
+        -width + x,  width + y,  width + z,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,
+        -width + x, -width + y,  width + z,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,
+         width + x, -width + y,  width + z,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f};
+        
         return backQuad;
     }
     
-    private float[] generateFrontQuad(final byte z, final float width) {
+    private float[] generateFrontQuad(final byte x, final byte y, final byte z, final float width) {
         
         final float[] frontQuad = {
         //   x      y      z      nx     ny     nz     r      g      b      a
-         width,  width, -width + z,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,  1.0f,
-        -width,  width, -width + z,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,  1.0f,
-        -width, -width, -width + z,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,  1.0f,
-         width, -width, -width + z,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,  1.0f};
+         width + x,  width + y, -width + z,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,  1.0f,
+        -width + x,  width + y, -width + z,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,  1.0f,
+        -width + x, -width + y, -width + z,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,  1.0f,
+         width + x, -width + y, -width + z,  0.0f,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f,  1.0f};
 
         return frontQuad;
     }
     
-    private float[] generateLeftQuad(final byte x, final float width) {
+    private float[] generateLeftQuad(final byte x, final byte y, final byte z, final float width) {
         
         final float[] leftQuad = {
         //   x      y      z      nx     ny     nz     r      g      b      a
-        -width + x,  width, -width, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-        -width + x,  width,  width, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-        -width + x, -width,  width, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,  1.0f,  1.0f,
-        -width + x, -width, -width, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,  1.0f,  1.0f};
+        -width + x,  width + y, -width + z, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+        -width + x,  width + y,  width + z, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+        -width + x, -width + y,  width + z, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,  1.0f,  1.0f,
+        -width + x, -width + y, -width + z, -1.0f,  0.0f,  0.0f,  0.0f,  0.0f,  1.0f,  1.0f};
 
         return leftQuad;
     }
     
-    private float[] generateRightQuad(final byte x, final float width) {
+    private float[] generateRightQuad(final byte x, final byte y, final byte z, final float width) {
         
         final float[] rightQuad = {
         //   x      y      z      nx     ny     nz     r      g      b      a
-        width + x,  width, -width,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
-        width + x,  width,  width,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
-        width + x, -width,  width,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
-        width + x, -width, -width,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f};
+        width + x,  width + y, -width + z,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
+        width + x,  width + y,  width + z,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
+        width + x, -width + y,  width + z,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
+        width + x, -width + y, -width + z,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f};
 
         return rightQuad;
     }
     
-    private float[] generateTopQuad(final byte y, final float width) {
+    private float[] generateTopQuad(final byte x, final byte y, final byte z, final float width) {
         
         final float[] topQuad = {
         //   x      y      z      nx     ny     nz     r      g      b      a
-        -width,  width + y, -width,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,  0.0f,  1.0f,
-        -width,  width + y,  width,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,  0.0f,  1.0f,
-         width,  width + y,  width,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,  0.0f,  1.0f,
-         width,  width + y, -width,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,  0.0f,  1.0f};
+        -width + x,  width + y, -width + z,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,  0.0f,  1.0f,
+        -width + x,  width + y,  width + z,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,  0.0f,  1.0f,
+         width + x,  width + y,  width + z,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,  0.0f,  1.0f,
+         width + x,  width + y, -width + z,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,  0.0f,  1.0f};
 
         return topQuad;
     }
     
-    private float[] generateBottomQuad(final byte y, final float width) {
+    private float[] generateBottomQuad(final byte x, final byte y, final byte z, final float width) {
         
         final float[] bottomQuad = {
         //   x      y      z      nx     ny     nz     r      g      b      a
-        -width, -width + y, -width,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
-        -width, -width + y,  width,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
-         width, -width + y,  width,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
-         width, -width + y, -width,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f};
+        -width + x, -width + y, -width + z,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+        -width + x, -width + y,  width + z,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+         width + x, -width + y,  width + z,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f,
+         width + x, -width + y, -width + z,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  1.0f};
 
         return bottomQuad;
     }

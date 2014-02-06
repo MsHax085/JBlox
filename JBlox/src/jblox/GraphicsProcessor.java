@@ -4,6 +4,7 @@ package jblox;
 import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL31;
 import org.lwjgl.util.glu.GLU;
 
 /**
@@ -13,6 +14,8 @@ import org.lwjgl.util.glu.GLU;
  * @version 1.0
  */
 public class GraphicsProcessor {
+    
+    private final boolean CULL_FACE = false;
     
     private final ChunkProcessor chunkProcessor = new ChunkProcessor();
     
@@ -51,11 +54,16 @@ public class GraphicsProcessor {
      * Initializes the OpenGL graphics rendering.
      */
     public void initOpenGL() {
+        GL11.glEnable(GL31.GL_PRIMITIVE_RESTART);
         GL11.glEnable(GL11.GL_TEXTURE_2D);// Enable 2D texture mapping
         GL11.glShadeModel(GL11.GL_SMOOTH);// Enable Smooth Shading
         GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.5f);// Values when color buffers are cleared
         GL11.glClearDepth(1.0f);// Value when depth buffer is cleared
-        GL11.glEnable(GL11.GL_CULL_FACE);// Don't draw faces facing away from camera
+        
+        if (CULL_FACE) {
+            GL11.glEnable(GL11.GL_CULL_FACE);
+        }
+        
         GL11.glEnable(GL11.GL_DEPTH_TEST);// Enable depth testing
         GL11.glDepthFunc(GL11.GL_LEQUAL);// Type of depth testing
         GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT, GL11.GL_NICEST);// Perspective calculations

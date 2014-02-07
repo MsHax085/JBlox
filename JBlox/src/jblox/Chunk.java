@@ -22,7 +22,8 @@ public class Chunk {
     
     // Mini-chunks
     private final byte vertexDataLength = 8;
-    private final int vboBufferLength = (vertexDataLength * 4 * 6) * 16 * 16 * 16;// Data * Vertices * Faces * X_Length * Y_Length * Z_Length
+    private final byte bytesPerVertex = 32;
+    private final int vboBufferLength = (vertexDataLength * 4 * 6) * 16 * 16 * 16;// (Data * Vertices * Faces) * X_Length * Y_Length * Z_Length
     private final int[] vboHandles = new int[16];
     
     // Generated noise-data + loaded & modified data
@@ -50,9 +51,9 @@ public class Chunk {
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, textures.getTexture("STONE").getTextureID());
             GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, handle);
             
-            GL11.glVertexPointer(3, GL11.GL_FLOAT, 32, 0);// 32 = Bytes per vertex
-            GL11.glNormalPointer(GL11.GL_FLOAT, 32, 12);
-            GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 32, 24);
+            GL11.glVertexPointer(3, GL11.GL_FLOAT, bytesPerVertex, 0);
+            GL11.glNormalPointer(GL11.GL_FLOAT, bytesPerVertex, 12);
+            GL11.glTexCoordPointer(2, GL11.GL_FLOAT, bytesPerVertex, 24);
             
             GL11.glDrawArrays(GL11.GL_QUADS, 0, vboBufferLength / vertexDataLength);
         }
@@ -137,16 +138,16 @@ public class Chunk {
         
         short quadBufferLength = 0;
         {
-            quadBufferLength += (generateFrontQuad)   ? 32 : 0;// 32 = Bytes per vertex
-            quadBufferLength += (generateBackQuad)  ? 32 : 0;
-            quadBufferLength += (generateLeftQuad)   ? 32 : 0;
-            quadBufferLength += (generateRightQuad)  ? 32 : 0;
-            quadBufferLength += (generateTopQuad)    ? 32 : 0;
-            quadBufferLength += (generateBottomQuad) ? 32 : 0;
+            quadBufferLength += (generateFrontQuad)     ? bytesPerVertex : 0;// 32 = Bytes per vertex
+            quadBufferLength += (generateBackQuad)      ? bytesPerVertex : 0;
+            quadBufferLength += (generateLeftQuad)      ? bytesPerVertex : 0;
+            quadBufferLength += (generateRightQuad)     ? bytesPerVertex : 0;
+            quadBufferLength += (generateTopQuad)       ? bytesPerVertex : 0;
+            quadBufferLength += (generateBottomQuad)    ? bytesPerVertex : 0;
         }
         
         final FloatBuffer quadBuffer = BufferUtils.createFloatBuffer(quadBufferLength);
-        final float WIDTH = 0.5f;// 0.5f
+        final float WIDTH = 0.4f;// 0.5f
         
         if (generateFrontQuad) {
             quadBuffer.put(generateFrontQuad(x, y, z, WIDTH));

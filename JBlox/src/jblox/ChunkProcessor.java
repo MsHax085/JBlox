@@ -34,8 +34,8 @@ public class ChunkProcessor {
         final int chunk_z_max = (chunk_z - CHUNK_RENDER_RADIUS) * -1;
         
         // Loop through visible chunks & render
-        for (int cx = chunk_x_min; cx < chunk_x_max; cx++) {// Change to chunk_x_max
-            for (int cz = chunk_z_min; cz < chunk_z_max; cz++) {// Change to chunk_x_max
+        for (int cx = chunk_x_min; cx < chunk_x_max - 1; cx++) {
+            for (int cz = chunk_z_min; cz < chunk_z_max - 1; cz++) {
             
                 final int cx_global = cx * 16;
                 final int cz_global = cz * 16;

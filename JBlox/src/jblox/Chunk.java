@@ -3,7 +3,6 @@ package jblox;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.Arrays;
 import java.util.Random;
 import jblox.generator.noise.SimplexOctaveGenerator;
 import org.lwjgl.BufferUtils;
@@ -20,7 +19,6 @@ public class Chunk {
     
     private final TextureProcessor textures = new TextureProcessor();
 
-    private final int seed = new Random().nextInt(Integer.MAX_VALUE);
     private final short HEIGHT = 256;// Chunk height
     private short highestBlockY = 0;
     
@@ -29,6 +27,7 @@ public class Chunk {
     private final byte bytesPerVertex = 32;
     private final int vboBufferLength = (vertexDataLength * 4 * 6) * 16 * 16 * 16;// (Data * Vertices * Faces) * X_Length * Y_Length * Z_Length
     private final int[] vboHandles = new int[16];
+    private int firstVboHandle;
     
     // Generated noise-data + loaded & modified data
     private final byte[] chunkData = new byte[16 * 16 * HEIGHT];
@@ -53,7 +52,7 @@ public class Chunk {
             }
             
             GL11.glPushMatrix();
-            GL11.glTranslatef(0, (handle - 1) * 16, 0);// Move mini-chunks along Y-Axis
+            GL11.glTranslatef(0, (handle - firstVboHandle) * 16, 0);// Move mini-chunks along Y-Axis
             
             {
                 GL11.glBindTexture(GL11.GL_TEXTURE_2D, textures.getTexture("STONE").getTextureID());
@@ -71,14 +70,14 @@ public class Chunk {
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
     }
     
-    public void genereateChunk() {
+    public void genereateChunk(final int x, final int z, final int seed) {// Chunk coords
         
-        generateNoise(0, 0);
+        generateNoise(x, z, seed);
         generateVBOs();
         
     }
     
-    private void generateNoise(final int cx, final int cz) {// Chunk coordinates
+    private void generateNoise(final int cx, final int cz, final int seed) {// Chunk coordinates
 
         //final byte[] blocks = new byte[16 * 16 * HEIGHT];
         
@@ -161,7 +160,8 @@ public class Chunk {
             for (byte y = 0; y < 16; y++) {
                 for (byte x = 0; x < 16; x++) {
                     for (byte z = 0; z < 16; z++) {
-                        if (chunkData[coordsToIndex(x, (short) (y + ((handle - 1) * 16)), z)] > 0) {
+                        
+                        if (chunkData[coordsToIndex(x, (short) (y + ((handle - firstVboHandle) * 16)), z)] > 0) {
                             vboBuffer.put(generateQuad(x, y, z));
                         }
                         
@@ -185,6 +185,7 @@ public class Chunk {
         
         GL15.glGenBuffers(buffer);
         
+        firstVboHandle = buffer.get(0);
         for (byte intHandle = 0; intHandle < vboChunks; intHandle++) {
             vboHandles[intHandle] = buffer.get(intHandle);
         }

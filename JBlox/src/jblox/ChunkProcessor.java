@@ -1,5 +1,8 @@
 package jblox;
 
+import java.util.ArrayList;
+import java.util.Random;
+import jblox.generator.Point2D;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -10,12 +13,9 @@ import org.lwjgl.opengl.GL11;
  */
 public class ChunkProcessor {
 
-    private final Chunk chunk = new Chunk();
-    private final byte CHUNK_RENDER_RADIUS = 1;
-    
-    public void generateChunks() {
-        chunk.genereateChunk();
-    }
+    private final ArrayList<Point2D> loadedChunks = new ArrayList<>();
+    private final byte CHUNK_RENDER_RADIUS = 4;
+    private final int seed = new Random().nextInt(Integer.MAX_VALUE);
     
     /**
      * Temporary drawing method for plain chunks
@@ -33,28 +33,64 @@ public class ChunkProcessor {
         final int chunk_x_max = (chunk_x - CHUNK_RENDER_RADIUS) * -1;
         final int chunk_z_max = (chunk_z - CHUNK_RENDER_RADIUS) * -1;
         
-        // Loop through visible chunks & render
-        for (int cx = chunk_x_min; cx < chunk_x_max - 1; cx++) {
-            for (int cz = chunk_z_min; cz < chunk_z_max - 1; cz++) {
+        // Unload chunks
+        for (Point2D p2d : loadedChunks) {
             
-                final int cx_global = cx * 16;
-                final int cz_global = cz * 16;
-                
-                GL11.glPushMatrix();
-                {
-                    GL11.glTranslatef(cx_global, 0, cz_global);
-                    chunk.renderChunk();
+            if (!(p2d.x >= chunk_x_min && p2d.x <= chunk_x_max)) {
+                if (!(p2d.z >= chunk_z_min && p2d.z <= chunk_z_max)) {
                     
+                    p2d.chunkReference.clear();
+                    loadedChunks.remove(p2d);
+                }
+            }
+        }
+        
+        // Load new chunks
+        for (int cx = chunk_x_min; cx <= chunk_x_max -1; cx++) {
+            for (int cz = chunk_z_min; cz <= chunk_z_max -1; cz++) {
+                
+                boolean foundNewChunk = true;
+                
+                for (Point2D p2d : loadedChunks) {
+                    
+                    if (p2d.x == cx && p2d.z == cz) {
+                        foundNewChunk = false;
+                        break;
+                    }
                 }
                 
-                GL11.glPopMatrix();
-            
+                if (foundNewChunk) {
+                    final Point2D p2d = new Point2D(cx, cz);
+                    
+                    p2d.chunkReference.genereateChunk(cx, cz, seed);
+                    loadedChunks.add(p2d);
+                }
             }
+        }
+        
+        
+        // Loop through visible chunks & render
+        for (Point2D p2d : loadedChunks) {
             
+            final int cx_global = p2d.x * 16;
+            final int cz_global = p2d.z * 16;
+
+            GL11.glPushMatrix();
+            {
+                GL11.glTranslatef(cx_global, 0, cz_global);
+                p2d.chunkReference.renderChunk();
+
+            }
+
+            GL11.glPopMatrix();
+
         }
     }
     
     public void clear() {
-        chunk.clear();
+        
+        for (Point2D p2d : loadedChunks) {
+            p2d.chunkReference.clear();
+        }
     }
 }

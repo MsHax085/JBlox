@@ -20,7 +20,7 @@ public class GraphicsProcessor {
     private final float NEAR_VIEW_DISTANCE = 1.0f;
     
     // Drawing outside this distance may cause objects to disappear/flicker on screen at certain angle
-    private final float FAR_VIEW_DISTANCE = 50.0f;
+    private final float FAR_VIEW_DISTANCE = 100.0f;
     
     private final float NEAR_FOG = FAR_VIEW_DISTANCE - 10;
     private final float FAR_FOG = FAR_VIEW_DISTANCE;
@@ -76,8 +76,6 @@ public class GraphicsProcessor {
         GL11.glLight(GL11.GL_LIGHT0, GL11.GL_DIFFUSE, floatBuffer(1.0f, 1.0f, 1.0f, 1.0f));
 
         GL11.glLightModel(GL11.GL_LIGHT_MODEL_AMBIENT, floatBuffer(0.6f, 0.6f, 0.6f, 1.0f));
-        
-        chunkProcessor.generateChunks();
     }
     
     private FloatBuffer floatBuffer(final float a, final float b, final float c, final float d) {

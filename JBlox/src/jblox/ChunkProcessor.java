@@ -63,81 +63,100 @@ public class ChunkProcessor {
      * @param z player z-position
      */
     public void drawChunks(final int x, final int z) {// Player position
-        
-        final int chunk_x = 0 / 16;// Default: x / 16
-        final int chunk_z = 0 / 16;// Default: z / 16
+        long start1 = System.currentTimeMillis();
+        final int chunk_x = x / 16;// Default: x / 16
+        final int chunk_z = z / 16;// Default: z / 16
         
         // Visible Chunks
         final int chunk_x_min = (chunk_x + CHUNK_RENDER_RADIUS) * -1;
         final int chunk_z_min = (chunk_z + CHUNK_RENDER_RADIUS) * -1;
         final int chunk_x_max = (chunk_x - CHUNK_RENDER_RADIUS) * -1;
         final int chunk_z_max = (chunk_z - CHUNK_RENDER_RADIUS) * -1;
-        /*
-         *
-         *  TODO: IMPROVE ...
-         *
-        */
-        // Unload chunks
+        
+        final byte chunks_on_x_axis = (byte)    (chunk_x_max - chunk_x_min);
+        final byte chunks_on_z_axis = (byte)    (chunk_z_max - chunk_z_min);
+        final short chunks_to_draw  = (short)   (chunks_on_x_axis * chunks_on_z_axis);
+        short chunks_drawn = 0;
+        
+        System.out.println("Calculation: " + (System.currentTimeMillis() - start1));// Worst-case: 0 ms
+        long start2 = System.currentTimeMillis();
+        
         for (Point2D p2d : loadedChunks) {
             
+            // Unload chunks
             if (!(p2d.x >= chunk_x_min && p2d.x <= chunk_x_max)) {
                 if (!(p2d.z >= chunk_z_min && p2d.z <= chunk_z_max)) {
                     
                     clearChunk(p2d.chunkReference);
-                    loadedChunks.remove(p2d);
+                    continue;
+                    
                 }
             }
+            
+            // Draw chunks
+            drawChunk(p2d);
+            chunks_drawn++;
         }
+        
+        System.out.println("Unload + Draw: " + (System.currentTimeMillis() - start2));// Worst-case: 103 ms
+        long start3 = System.currentTimeMillis();
         
         // Load new chunks
-        for (int cx = chunk_x_min; cx <= chunk_x_max -1; cx++) {
-            for (int cz = chunk_z_min; cz <= chunk_z_max -1; cz++) {
-                
-                boolean foundNewChunk = true;
-                
-                for (Point2D p2d : loadedChunks) {
-                    
-                    if (p2d.x == cx && p2d.z == cz) {
-                        foundNewChunk = false;
-                        break;
+        if (chunks_drawn < chunks_to_draw) {
+            
+            for (int cx = chunk_x_min; cx <= chunk_x_max -1; cx++) {
+                for (int cz = chunk_z_min; cz <= chunk_z_max -1; cz++) {
+
+                    boolean foundNewChunk = true;
+
+                    for (Point2D p2d : loadedChunks) {
+
+                        if (p2d.x == cx && p2d.z == cz) {
+                            foundNewChunk = false;
+                            break;
+                        }
+                    }
+
+                    if (foundNewChunk) {
+                        
+                        final Point2D p2d = new Point2D(cx, cz);
+                        createChunk(p2d);
+                        drawChunk(p2d);
                     }
                 }
-                
-                if (foundNewChunk) {
-                    final Point2D p2d = new Point2D(cx, cz);
-                    
-                    chunkNoiseGenerator.generateNoise(p2d);
-                    chunkVboGenerator.generateVBOHandles(p2d.chunkReference);
-                    chunkVboGenerator.generateVBOs(p2d.chunkReference);
-                    
-                    loadedChunks.add(p2d);
-                }
             }
         }
         
+        System.out.println("Load new: " + (System.currentTimeMillis() - start3));// Worst-case: ... ms
+    }
+    
+    private void drawChunk(final Point2D p2d) {
         
-        // Loop through visible chunks & render
-        for (Point2D p2d : loadedChunks) {
-            
-            final int cx_global = p2d.x * 16;
-            final int cz_global = p2d.z * 16;
+        final int cx_global = p2d.x * 16;
+        final int cz_global = p2d.z * 16;
 
-            GL11.glPushMatrix();
-            {
-                GL11.glTranslatef(cx_global, 0, cz_global);
-                renderChunk(p2d.chunkReference);
-
-            }
-
-            GL11.glPopMatrix();
+        GL11.glPushMatrix();
+        {
+            GL11.glTranslatef(cx_global, 0, cz_global);
+            renderChunk(p2d.chunkReference);
 
         }
+        GL11.glPopMatrix();
+    }
+    
+    private void createChunk(final Point2D p2d) {
+        chunkNoiseGenerator.generateNoise(p2d);
+        chunkVboGenerator.generateVBOHandles(p2d.chunkReference);
+        chunkVboGenerator.generateVBOs(p2d.chunkReference);
+
+        loadedChunks.add(p2d);
     }
     
     public void clear() {
         
         for (Point2D p2d : loadedChunks) {
             clearChunk(p2d.chunkReference);
+            loadedChunks.remove(p2d);
         }
     }
     

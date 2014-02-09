@@ -63,7 +63,7 @@ public class ChunkProcessor {
      * @param z player z-position
      */
     public void drawChunks(final int x, final int z) {// Player position
-        long start1 = System.currentTimeMillis();
+        
         final int chunk_x = x / 16;// Default: x / 16
         final int chunk_z = z / 16;// Default: z / 16
         
@@ -73,13 +73,7 @@ public class ChunkProcessor {
         final int chunk_x_max = (chunk_x - CHUNK_RENDER_RADIUS) * -1;
         final int chunk_z_max = (chunk_z - CHUNK_RENDER_RADIUS) * -1;
         
-        final byte chunks_on_x_axis = (byte)    (chunk_x_max - chunk_x_min);
-        final byte chunks_on_z_axis = (byte)    (chunk_z_max - chunk_z_min);
-        final short chunks_to_draw  = (short)   (chunks_on_x_axis * chunks_on_z_axis);
-        short chunks_drawn = 0;
-        
-        System.out.println("Calculation: " + (System.currentTimeMillis() - start1));// Worst-case: 0 ms
-        long start2 = System.currentTimeMillis();
+        final ArrayList<Point2D> unloaded_chunks_buffer = new ArrayList<>();
         
         for (Point2D p2d : loadedChunks) {
             
@@ -87,7 +81,8 @@ public class ChunkProcessor {
             if (!(p2d.x >= chunk_x_min && p2d.x <= chunk_x_max)) {
                 if (!(p2d.z >= chunk_z_min && p2d.z <= chunk_z_max)) {
                     
-                    clearChunk(p2d.chunkReference);
+                    clearChunk(p2d);
+                    unloaded_chunks_buffer.add(p2d);
                     continue;
                     
                 }
@@ -95,39 +90,35 @@ public class ChunkProcessor {
             
             // Draw chunks
             drawChunk(p2d);
-            chunks_drawn++;
         }
         
-        System.out.println("Unload + Draw: " + (System.currentTimeMillis() - start2));// Worst-case: 103 ms
-        long start3 = System.currentTimeMillis();
+        if (!unloaded_chunks_buffer.isEmpty()) {
+            loadedChunks.removeAll(unloaded_chunks_buffer);
+            unloaded_chunks_buffer.clear();
+        }
         
         // Load new chunks
-        if (chunks_drawn < chunks_to_draw) {
-            
-            for (int cx = chunk_x_min; cx <= chunk_x_max -1; cx++) {
-                for (int cz = chunk_z_min; cz <= chunk_z_max -1; cz++) {
+        for (int cx = chunk_x_min; cx <= chunk_x_max -1; cx++) {
+            for (int cz = chunk_z_min; cz <= chunk_z_max -1; cz++) {
 
-                    boolean foundNewChunk = true;
+                boolean foundNewChunk = true;
 
-                    for (Point2D p2d : loadedChunks) {
+                for (Point2D p2d : loadedChunks) {
 
-                        if (p2d.x == cx && p2d.z == cz) {
-                            foundNewChunk = false;
-                            break;
-                        }
+                    if (p2d.x == cx && p2d.z == cz) {
+                        foundNewChunk = false;
+                        break;
                     }
+                }
 
-                    if (foundNewChunk) {
-                        
-                        final Point2D p2d = new Point2D(cx, cz);
-                        createChunk(p2d);
-                        drawChunk(p2d);
-                    }
+                if (foundNewChunk) {
+
+                    final Point2D p2d = new Point2D(cx, cz);
+                    createChunk(p2d);
+                    drawChunk(p2d);
                 }
             }
         }
-        
-        System.out.println("Load new: " + (System.currentTimeMillis() - start3));// Worst-case: ... ms
     }
     
     private void drawChunk(final Point2D p2d) {
@@ -155,14 +146,15 @@ public class ChunkProcessor {
     public void clear() {
         
         for (Point2D p2d : loadedChunks) {
-            clearChunk(p2d.chunkReference);
-            loadedChunks.remove(p2d);
+            clearChunk(p2d);
         }
+        
+        loadedChunks.clear();
     }
     
-    private void clearChunk(final Chunk chunk) {
+    private void clearChunk(final Point2D p2d) {
         
-        for (int handle : chunk.getVboHandles()) {
+        for (int handle : p2d.chunkReference.getVboHandles()) {
             
             if (!(handle > 0)) {
                 break;

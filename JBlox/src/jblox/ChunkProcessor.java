@@ -24,7 +24,8 @@ public class ChunkProcessor {
     
     private final TextureProcessor textures = new TextureProcessor();
 
-    private final ArrayList<Point2D> loadedChunks = new ArrayList<>();
+    private final ArrayList<Point2D> loaded_chunks_buffer = new ArrayList<>();
+        final ArrayList<Point2D> unloaded_chunks_buffer = new ArrayList<>();
     private final byte CHUNK_RENDER_RADIUS = 1;
     
     public void renderChunk(final Chunk chunk) {
@@ -73,19 +74,15 @@ public class ChunkProcessor {
         final int chunk_x_max = (chunk_x - CHUNK_RENDER_RADIUS) * -1;
         final int chunk_z_max = (chunk_z - CHUNK_RENDER_RADIUS) * -1;
         
-        final ArrayList<Point2D> unloaded_chunks_buffer = new ArrayList<>();
-        
-        for (Point2D p2d : loadedChunks) {
+        for (Point2D p2d : loaded_chunks_buffer) {
             
             // Unload chunks
-            if (!(p2d.x >= chunk_x_min && p2d.x <= chunk_x_max)) {
-                if (!(p2d.z >= chunk_z_min && p2d.z <= chunk_z_max)) {
-                    
-                    clearChunk(p2d);
-                    unloaded_chunks_buffer.add(p2d);
-                    continue;
-                    
-                }
+            if (!(p2d.x >= chunk_x_min && p2d.x <= chunk_x_max) || 
+                !(p2d.z >= chunk_z_min && p2d.z <= chunk_z_max)) {
+
+                clearChunk(p2d);
+                unloaded_chunks_buffer.add(p2d);
+                continue;
             }
             
             // Draw chunks
@@ -93,7 +90,7 @@ public class ChunkProcessor {
         }
         
         if (!unloaded_chunks_buffer.isEmpty()) {
-            loadedChunks.removeAll(unloaded_chunks_buffer);
+            loaded_chunks_buffer.removeAll(unloaded_chunks_buffer);
             unloaded_chunks_buffer.clear();
         }
         
@@ -103,7 +100,7 @@ public class ChunkProcessor {
 
                 boolean foundNewChunk = true;
 
-                for (Point2D p2d : loadedChunks) {
+                for (Point2D p2d : loaded_chunks_buffer) {
 
                     if (p2d.x == cx && p2d.z == cz) {
                         foundNewChunk = false;
@@ -140,16 +137,16 @@ public class ChunkProcessor {
         chunkVboGenerator.generateVBOHandles(p2d.chunkReference);
         chunkVboGenerator.generateVBOs(p2d.chunkReference);
 
-        loadedChunks.add(p2d);
+        loaded_chunks_buffer.add(p2d);
     }
     
     public void clear() {
         
-        for (Point2D p2d : loadedChunks) {
+        for (Point2D p2d : loaded_chunks_buffer) {
             clearChunk(p2d);
         }
         
-        loadedChunks.clear();
+        loaded_chunks_buffer.clear();
     }
     
     private void clearChunk(final Point2D p2d) {

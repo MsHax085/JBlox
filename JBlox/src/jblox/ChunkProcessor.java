@@ -24,10 +24,6 @@ public class ChunkProcessor {
     
     private final TextureProcessor textures = new TextureProcessor();
 
-    // DEPRECATED
-    private final ArrayList<Point2D> loaded_chunks_buffer = new ArrayList<>();
-        final ArrayList<Point2D> unloaded_chunks_buffer = new ArrayList<>();
-        
     private final TreeMap<String, Chunk> primary_chunk_buffer = new TreeMap<>();
     private final TreeMap<String, Chunk> secondary_chunk_buffer = new TreeMap<>();
     
@@ -131,16 +127,16 @@ public class ChunkProcessor {
     
     public void clear() {
         
-        for (Point2D p2d : loaded_chunks_buffer) {
-            clearChunk(p2d);
+        for (Chunk chunk : primary_chunk_buffer.values()) {
+            clearChunk(chunk);
         }
         
-        loaded_chunks_buffer.clear();
+        primary_chunk_buffer.clear();
     }
     
-    private void clearChunk(final Point2D p2d) {
+    private void clearChunk(final Chunk chunk) {
         
-        for (int handle : p2d.chunkReference.getVboHandles()) {
+        for (int handle : chunk.getVboHandles()) {
             
             if (!(handle > 0)) {
                 break;

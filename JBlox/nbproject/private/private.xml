@@ -7,7 +7,8 @@
             <file>file:/C:/Users/nti/Documents/GitHub/JBlox/JBlox/src/jblox/generator/ChunkNoiseGenerator.java</file>
             <file>file:/C:/Users/nti/Documents/GitHub/JBlox/JBlox/src/jblox/generator/ChunkVboGenerator.java</file>
             <file>file:/C:/Users/nti/Documents/GitHub/JBlox/JBlox/src/jblox/Chunk.java</file>
-            <file>file:/C:/Users/nti/Documents/GitHub/JBlox/JBlox/src/jblox/Chunk_deprecated.java</file>
+            <file>file:/C:/Users/nti/Documents/GitHub/JBlox/JBlox/src/jblox/ChunkConstants.java</file>
+            <file>file:/C:/Users/nti/Documents/GitHub/JBlox/JBlox/src/jblox/generator/Point2D.java</file>
             <file>file:/C:/Users/nti/Documents/GitHub/JBlox/JBlox/src/jblox/ChunkProcessor.java</file>
         </group>
     </open-files>

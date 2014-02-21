@@ -41,14 +41,12 @@ public class ChunkNoiseGenerator {
         
     }
 
-    public void generateNoise(final Point2D p2d) {// Chunk coordinates
-
-        final Chunk chunk = p2d.chunkReference;
-
+    public void generateNoise(final int cx, final int cz, final Chunk chunk) {// Chunk coordinates
+        
         for (byte x = 0; x < 16; x++) {
             for (byte z = 0; z < 16; z++) {
-                int wx = x + p2d.x * 16;
-                int wz = z + p2d.z * 16;
+                int wx = x + cx * 16;
+                int wz = z + cz * 16;
                 
                 final double groundHeight     = ground.noise(wx, wz, 0.5, 0.5)    * GROUND_MAGNITUDE + GROUND_ELEVATION;
                 final double hills_height     = hills.noise(wx, wz, 0.8, 0.5)     * HILLS_MAGNITUDE + GROUND_ELEVATION;

@@ -1,7 +1,7 @@
 package jblox;
 
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.TreeMap;
 import static jblox.ChunkConstants.BYTES_PER_VERTEX;
 import static jblox.ChunkConstants.VBO_BUFFER_LENGTH;
 import static jblox.ChunkConstants.VERTEX_DATA_LENGTH;
@@ -24,8 +24,13 @@ public class ChunkProcessor {
     
     private final TextureProcessor textures = new TextureProcessor();
 
+    // DEPRECATED
     private final ArrayList<Point2D> loaded_chunks_buffer = new ArrayList<>();
         final ArrayList<Point2D> unloaded_chunks_buffer = new ArrayList<>();
+        
+    private final TreeMap<String, Chunk> primary_chunk_buffer = new TreeMap<>();
+    private final TreeMap<String, Chunk> secondary_chunk_buffer = new TreeMap<>();
+    
     private final byte CHUNK_RENDER_RADIUS = 1;
     
     public void renderChunk(final Chunk chunk) {
@@ -74,70 +79,54 @@ public class ChunkProcessor {
         final int chunk_x_max = (chunk_x - CHUNK_RENDER_RADIUS) * -1;
         final int chunk_z_max = (chunk_z - CHUNK_RENDER_RADIUS) * -1;
         
-        for (Point2D p2d : loaded_chunks_buffer) {
-            
-            // Unload chunks
-            if (!(p2d.x >= chunk_x_min && p2d.x <= chunk_x_max) || 
-                !(p2d.z >= chunk_z_min && p2d.z <= chunk_z_max)) {
-
-                clearChunk(p2d);
-                unloaded_chunks_buffer.add(p2d);
-                continue;
-            }
-            
-            // Draw chunks
-            drawChunk(p2d);
-        }
-        
-        if (!unloaded_chunks_buffer.isEmpty()) {
-            loaded_chunks_buffer.removeAll(unloaded_chunks_buffer);
-            unloaded_chunks_buffer.clear();
-        }
-        
-        // Load new chunks
+        // UPDATE SECONDARY CHUNK BUFFER
         for (int cx = chunk_x_min; cx <= chunk_x_max -1; cx++) {
             for (int cz = chunk_z_min; cz <= chunk_z_max -1; cz++) {
-
-                boolean foundNewChunk = true;
-
-                for (Point2D p2d : loaded_chunks_buffer) {
-
-                    if (p2d.x == cx && p2d.z == cz) {
-                        foundNewChunk = false;
-                        break;
+                
+                final String key = cx + "." + cz;
+                final Chunk value;
+                
+                if (primary_chunk_buffer.containsKey(key)) {// MOVE ALREADY LOADED CHUNKS
+                    value = primary_chunk_buffer.get(key);
+                    secondary_chunk_buffer.put(key, value);
+                    
+                } else {// LOAD NEW CHUNKS TO SECONDARY BUFFER
+                    final Chunk chunk = new Chunk();
+                    {
+                        createChunk(cx, cz, chunk);
+                        secondary_chunk_buffer.put(key, chunk);
+                        value = chunk;
                     }
                 }
-
-                if (foundNewChunk) {
-
-                    final Point2D p2d = new Point2D(cx, cz);
-                    createChunk(p2d);
-                    drawChunk(p2d);
-                }
+                
+                drawChunk(cx, cz, value);
             }
         }
+        
+        // FLIP BUFFERS
+        primary_chunk_buffer.clear();
+        primary_chunk_buffer.putAll(secondary_chunk_buffer);
+        secondary_chunk_buffer.clear();
     }
     
-    private void drawChunk(final Point2D p2d) {
+    private void drawChunk(final int x, final int z, final Chunk chunk) {
         
-        final int cx_global = p2d.x * 16;
-        final int cz_global = p2d.z * 16;
+        final int cx_global = x * 16;
+        final int cz_global = z * 16;
 
         GL11.glPushMatrix();
         {
             GL11.glTranslatef(cx_global, 0, cz_global);
-            renderChunk(p2d.chunkReference);
+            renderChunk(chunk);
 
         }
         GL11.glPopMatrix();
     }
     
-    private void createChunk(final Point2D p2d) {
-        chunkNoiseGenerator.generateNoise(p2d);
-        chunkVboGenerator.generateVBOHandles(p2d.chunkReference);
-        chunkVboGenerator.generateVBOs(p2d.chunkReference);
-
-        loaded_chunks_buffer.add(p2d);
+    private void createChunk(final int x, final int z, final Chunk chunk) {
+        chunkNoiseGenerator.generateNoise(x, z, chunk);
+        chunkVboGenerator.generateVBOHandles(chunk);
+        chunkVboGenerator.generateVBOs(chunk);
     }
     
     public void clear() {

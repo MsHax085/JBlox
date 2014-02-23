@@ -2,8 +2,8 @@ package jblox.generator;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import jblox.Chunk;
-import jblox.ChunkConstants;
+import jblox.chunks.Chunk;
+import jblox.chunks.ChunkConstants;
 import jblox.generator.noise.SimplexOctaveGenerator;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL15;

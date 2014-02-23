@@ -1,6 +1,8 @@
 
 package jblox;
 
+import jblox.chunks.ChunkHandler;
+import jblox.client.Client;
 import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -12,9 +14,9 @@ import org.lwjgl.util.glu.GLU;
  * @since 2013-nov-30
  * @version 1.0
  */
-public class GraphicsProcessor {
+public class Scene {
     
-    private final ChunkProcessor chunkProcessor = new ChunkProcessor();
+    private final ChunkHandler chunkHandler;
     
     private final float FOV = 90.0f;
     private final float NEAR_VIEW_DISTANCE = 1.0f;
@@ -24,6 +26,10 @@ public class GraphicsProcessor {
     
     private final float NEAR_FOG = FAR_VIEW_DISTANCE - 10;
     private final float FAR_FOG = FAR_VIEW_DISTANCE;
+    
+    public Scene(final Client client) {
+        this.chunkHandler = new ChunkHandler(client);
+    }
     
     // Init-methods ------------------------------------------------------------
 
@@ -119,10 +125,10 @@ public class GraphicsProcessor {
         
         GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, floatBuffer(x, 256, z, 0.0f));
         
-        chunkProcessor.drawChunks((int) x, (int) z, isMoving);
+        chunkHandler.drawChunks();
     }
     
     public void clear() {
-        chunkProcessor.clear();
+        chunkHandler.clear();
     }
 }

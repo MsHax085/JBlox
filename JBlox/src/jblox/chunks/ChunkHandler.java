@@ -1,9 +1,10 @@
-package jblox;
+package jblox.chunks;
 
+import jblox.client.Client;
 import java.util.TreeMap;
-import static jblox.ChunkConstants.BYTES_PER_VERTEX;
-import static jblox.ChunkConstants.VBO_BUFFER_LENGTH;
-import static jblox.ChunkConstants.VERTEX_DATA_LENGTH;
+import static jblox.chunks.ChunkConstants.BYTES_PER_VERTEX;
+import static jblox.chunks.ChunkConstants.VBO_BUFFER_LENGTH;
+import static jblox.chunks.ChunkConstants.VERTEX_DATA_LENGTH;
 import jblox.generator.ChunkNoiseGenerator;
 import jblox.generator.ChunkVboGenerator;
 import org.lwjgl.opengl.GL11;
@@ -15,7 +16,9 @@ import org.lwjgl.opengl.GL15;
  * @since 2013-dec-03
  * @version 1.0
  */
-public class ChunkProcessor {
+public class ChunkHandler {
+    
+    private final Client client;
     
     private final ChunkNoiseGenerator chunkNoiseGenerator = new ChunkNoiseGenerator();
     private final ChunkVboGenerator chunkVboGenerator = new ChunkVboGenerator();
@@ -27,16 +30,14 @@ public class ChunkProcessor {
     
     private final byte CHUNK_RENDER_RADIUS = 1;
     
+    public ChunkHandler(final Client client) {
+        this.client = client;
+    }
     
-    /**
-     * Temporary drawing method for plain chunks
-     * @param x player x-position
-     * @param z player z-position
-     */
-    public void drawChunks(final int x, final int z, final boolean isMoving) {
+    public void drawChunks() {
         
-        final int chunk_x = x / 16;
-        final int chunk_z = z / 16;
+        final int chunk_x = (int) (client.getX() / 16);
+        final int chunk_z = (int) (client.getZ() / 16);
         
         // VISIBLE CHUNKS
         final int chunk_x_min = (chunk_x + CHUNK_RENDER_RADIUS) * -1;

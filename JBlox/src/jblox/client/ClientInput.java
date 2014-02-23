@@ -1,5 +1,5 @@
 
-package jblox;
+package jblox.client;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;

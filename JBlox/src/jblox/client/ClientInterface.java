@@ -1,5 +1,5 @@
 
-package jblox;
+package jblox.client;
 
 import de.matthiasmann.twl.GUI;
 import de.matthiasmann.twl.Label;
@@ -9,6 +9,7 @@ import de.matthiasmann.twl.theme.ThemeManager;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import jblox.Entry;
 import org.lwjgl.LWJGLException;
 
 /**
@@ -19,7 +20,7 @@ import org.lwjgl.LWJGLException;
  */
 public class ClientInterface extends Widget {
     
-    private final ClientDisplay display;
+    private final Entry entry;
 
     private LWJGLRenderer renderer;
     private GUI gui;
@@ -35,8 +36,8 @@ public class ClientInterface extends Widget {
     private Label label_pitch;
     private Label label_dir;
     
-    public ClientInterface(final ClientDisplay display) {
-        this.display = display;
+    public ClientInterface(final Entry entry) {
+        this.entry = entry;
     }
     
     public void init() {
@@ -83,8 +84,8 @@ public class ClientInterface extends Widget {
             isCreated = true;
         }
         
-        final Client client = display.getClient();
-        label_fps.setText("FPS: " + display.getFPS());
+        final Client client = entry.getClient();
+        label_fps.setText("FPS: " + entry.getFPS());
         label_x.setText("X-POS: " + client.getX());
         label_y.setText("Y-POS: " + client.getY());
         label_z.setText("Z-POS: " + client.getZ());

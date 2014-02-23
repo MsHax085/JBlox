@@ -1,5 +1,5 @@
 
-package jblox;
+package jblox.chunks;
 
 /**
  *

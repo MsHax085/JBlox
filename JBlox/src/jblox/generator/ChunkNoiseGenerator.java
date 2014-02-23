@@ -1,8 +1,8 @@
 package jblox.generator;
 
 import java.util.Random;
-import jblox.Chunk;
-import jblox.ChunkConstants;
+import jblox.chunks.Chunk;
+import jblox.chunks.ChunkConstants;
 import jblox.generator.noise.SimplexOctaveGenerator;
 
 /**

@@ -1,7 +1,7 @@
 
 package jblox.generator;
 
-import jblox.Chunk;
+import jblox.chunks.Chunk;
 
 /**
  *

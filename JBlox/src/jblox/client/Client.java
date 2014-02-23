@@ -1,6 +1,9 @@
 
 package jblox.client;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.lwjgl.input.Mouse;
 
 /**
@@ -28,6 +31,11 @@ public class Client {
     
     private final float ACCELERATION = 0.3f;// 0.3f
     private final float FRICTION = -0.95f;// -0.75f
+    
+    private final ReadWriteLock  rwLock_x = new ReentrantReadWriteLock();
+    private final ReadWriteLock  rwLock_z = new ReentrantReadWriteLock();
+    private final Lock rLock_x = rwLock_x.readLock();
+    private final Lock rLock_z = rwLock_z.readLock();
     
     public Client(final ClientInput clientInput) {
         this.ci = clientInput;
@@ -99,7 +107,12 @@ public class Client {
     }
     
     public float getX() {
-        return x;
+        rLock_x.lock();
+        try {
+            return x;
+        } finally {
+            rLock_x.unlock();
+        }
     }
     
     public float getY() {
@@ -107,7 +120,12 @@ public class Client {
     }
     
     public float getZ() {
-        return z;
+        rLock_z.lock();
+        try {
+            return z;
+        } finally {
+            rLock_z.unlock();
+        }
     }
     
     public float getYaw() {

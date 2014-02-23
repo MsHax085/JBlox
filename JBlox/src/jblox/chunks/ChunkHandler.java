@@ -2,6 +2,9 @@ package jblox.chunks;
 
 import jblox.client.Client;
 import java.util.TreeMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import static jblox.chunks.ChunkConstants.BYTES_PER_VERTEX;
 import static jblox.chunks.ChunkConstants.VBO_BUFFER_LENGTH;
 import static jblox.chunks.ChunkConstants.VERTEX_DATA_LENGTH;
@@ -28,11 +31,48 @@ public class ChunkHandler {
     private final TreeMap<String, Chunk> primary_chunk_buffer = new TreeMap<>();
     private final TreeMap<String, Chunk> secondary_chunk_buffer = new TreeMap<>();
     
+    private final TreeMap<String, Chunk> chunk_buffer = new TreeMap<>();
+    
+    private final ReadWriteLock rwLock = new ReentrantReadWriteLock();
+    private final Lock rLock = rwLock.readLock();
+    
     private final byte CHUNK_RENDER_RADIUS = 1;
     
     public ChunkHandler(final Client client) {
         this.client = client;
     }
+    
+    // *************************************************************************
+    
+    public void addChunk(final String coordinates, final Chunk chunk) {// ONE THREAD ONLY
+        chunk_buffer.put(coordinates, chunk);
+    }
+    
+    public void removeChunk(final String coordinates) {// ONE THREAD ONLY
+        chunk_buffer.remove(coordinates);
+    }
+    
+    public boolean containsChunk(final String coordinates) {// MULTIPLE THREADS
+        rLock.lock();
+        
+        try {
+            return chunk_buffer.containsKey(coordinates);
+        } finally {
+            rLock.unlock();
+        }
+    }
+    
+    public Chunk getChunk(final String coordinates) {// MULTIPLE THREADS
+        rLock.lock();
+        
+        try {
+            return chunk_buffer.get(coordinates);
+        } finally {
+            rLock.unlock();
+        }
+    }
+    
+    // *************************************************************************
     
     public void drawChunks() {
         

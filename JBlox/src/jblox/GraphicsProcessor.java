@@ -108,7 +108,7 @@ public class GraphicsProcessor {
     
     // Rendering methods -------------------------------------------------------
     
-    public void draw(final float x, final float y, final float z, final float yaw, final float pitch) {// Player position
+    public void draw(final float x, final float y, final float z, final float yaw, final float pitch, final boolean isMoving) {// Player position
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);// Clear screen & depth buffer
         GL11.glLoadIdentity();// Reset View
         
@@ -119,7 +119,7 @@ public class GraphicsProcessor {
         
         GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, floatBuffer(x, 256, z, 0.0f));
         
-        chunkProcessor.drawChunks((int) x, (int) z);
+        chunkProcessor.drawChunks((int) x, (int) z, isMoving);
     }
     
     public void clear() {

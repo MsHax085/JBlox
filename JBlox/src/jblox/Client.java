@@ -92,6 +92,12 @@ public class Client {
     
     // -------------------------------------------------------------------------
     
+    public boolean isMoving() {
+        return xSpeed > 0 ||
+               ySpeed > 0 ||
+               zSpeed > 0;
+    }
+    
     public float getX() {
         return x;
     }

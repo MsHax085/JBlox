@@ -91,8 +91,10 @@ public class ClientDisplay {
             final float yaw = client.getYaw();
             final float pitch = client.getPitch();
             
+            final boolean isMoving = client.isMoving();
+            
             update(delta);
-            gProcessor.draw(x, y, z, yaw, pitch);
+            gProcessor.draw(x, y, z, yaw, pitch, isMoving);
             clientInterface.update();
             
             Display.update();

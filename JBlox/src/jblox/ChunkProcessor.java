@@ -27,12 +27,13 @@ public class ChunkProcessor {
     
     private final byte CHUNK_RENDER_RADIUS = 1;
     
+    
     /**
      * Temporary drawing method for plain chunks
      * @param x player x-position
      * @param z player z-position
      */
-    public void drawChunks(final int x, final int z) {
+    public void drawChunks(final int x, final int z, final boolean isMoving) {
         
         final int chunk_x = x / 16;
         final int chunk_z = z / 16;

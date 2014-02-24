@@ -1,5 +1,6 @@
 package jblox;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import jblox.client.ClientInterface;
 import jblox.client.ClientInput;
 import jblox.client.Client;
@@ -25,6 +26,9 @@ public class Entry {
     private final Client client;
     private final ClientInterface clientInterface;
     private final Scene scene;
+    
+    public static AtomicBoolean run = new AtomicBoolean(true);// USED BY MAIN LOOP
+    public static AtomicBoolean stop = new AtomicBoolean(false);// USED BY "CHUNK" LOOP
     
     private final int WIDTH = 1000;
     private final int HEIGHT = 600;
@@ -88,8 +92,12 @@ public class Entry {
         getDelta();
         lastFPS = getTime();
         
-        while (!Display.isCloseRequested() && !clientInput.isESCPressed()) {
+        while (run.get()) {
 
+            if (Display.isCloseRequested() || clientInput.isESCPressed()) {
+                stop.set(true);
+            }
+            
             final int delta = getDelta();
             
             final float x = client.getX();

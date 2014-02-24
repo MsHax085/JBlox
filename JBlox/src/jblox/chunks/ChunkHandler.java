@@ -1,5 +1,7 @@
 package jblox.chunks;
 
+import java.util.ArrayList;
+import java.util.Map.Entry;
 import jblox.client.Client;
 import java.util.TreeMap;
 import java.util.concurrent.locks.Lock;
@@ -8,7 +10,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import static jblox.chunks.ChunkConstants.BYTES_PER_VERTEX;
 import static jblox.chunks.ChunkConstants.VBO_BUFFER_LENGTH;
 import static jblox.chunks.ChunkConstants.VERTEX_DATA_LENGTH;
-import jblox.generator.ChunkNoiseGenerator;
 import jblox.generator.ChunkVboGenerator;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
@@ -22,105 +23,152 @@ import org.lwjgl.opengl.GL15;
 public class ChunkHandler {
     
     private final Client client;
+    private final ChunkProcessor processor;
+    private final Thread processorThread;
     
-    private final ChunkNoiseGenerator chunkNoiseGenerator = new ChunkNoiseGenerator();
     private final ChunkVboGenerator chunkVboGenerator = new ChunkVboGenerator();
     
     private final TextureProcessor textures = new TextureProcessor();
 
-    private final TreeMap<String, Chunk> primary_chunk_buffer = new TreeMap<>();
-    private final TreeMap<String, Chunk> secondary_chunk_buffer = new TreeMap<>();
-    
     private final TreeMap<String, Chunk> chunk_buffer = new TreeMap<>();
+    private final TreeMap<String, Chunk> create_buffer = new TreeMap<>();
+    private final ArrayList<String> dispose_buffer = new ArrayList<>();
     
-    private final ReadWriteLock rwLock = new ReentrantReadWriteLock();
-    private final Lock rLock = rwLock.readLock();
+    private final ReadWriteLock create_lock = new ReentrantReadWriteLock();
+    private final ReadWriteLock dispose_lock = new ReentrantReadWriteLock();
     
-    private final byte CHUNK_RENDER_RADIUS = 1;
+    private final Lock create_lock_w = create_lock.writeLock();
+    private final Lock dispose_lock_w = dispose_lock.writeLock();
+    
+    // *************************************************************************
     
     public ChunkHandler(final Client client) {
         this.client = client;
+        
+        this.processor = new ChunkProcessor(this);
+        this.processorThread = new Thread(this.processor);
+        this.processorThread.start();
+        
     }
     
     // *************************************************************************
     
-    public void addChunk(final String coordinates, final Chunk chunk) {// ONE THREAD ONLY
-        chunk_buffer.put(coordinates, chunk);
+    /**
+     * This method returns a Client reference
+     * @return Client A Client reference
+     */
+    public Client getClient() {
+        return client;
     }
     
-    public void removeChunk(final String coordinates) {// ONE THREAD ONLY
-        chunk_buffer.remove(coordinates);
-    }
-    
-    public boolean containsChunk(final String coordinates) {// MULTIPLE THREADS
-        rLock.lock();
-        
-        try {
-            return chunk_buffer.containsKey(coordinates);
-        } finally {
-            rLock.unlock();
-        }
-    }
-    
-    public Chunk getChunk(final String coordinates) {// MULTIPLE THREADS
-        rLock.lock();
-        
-        try {
-            return chunk_buffer.get(coordinates);
-        } finally {
-            rLock.unlock();
-        }
-    }
-    
-    // *************************************************************************
-    
-    public void drawChunks() {
-        
-        final int chunk_x = (int) (client.getX() / 16);
-        final int chunk_z = (int) (client.getZ() / 16);
-        
-        // VISIBLE CHUNKS
-        final int chunk_x_min = (chunk_x + CHUNK_RENDER_RADIUS) * -1;
-        final int chunk_z_min = (chunk_z + CHUNK_RENDER_RADIUS) * -1;
-        final int chunk_x_max = (chunk_x - CHUNK_RENDER_RADIUS) * -1;
-        final int chunk_z_max = (chunk_z - CHUNK_RENDER_RADIUS) * -1;
-        
-        // UPDATE SECONDARY CHUNK BUFFER
-        for (int cx = chunk_x_min; cx <= chunk_x_max -1; cx++) {
-            for (int cz = chunk_z_min; cz <= chunk_z_max -1; cz++) {
+    /**
+     * This method updates the chunk buffer
+     * create_buffer must be cleared after it's data is copied, therefore
+     * a writelock is used at entry. This minimize the risk of waiting to acquire 
+     * the writelock after the reading is done. Using read- and writelocks is not
+     * an option in this case.
+     * 
+     * This method will be called from the main thread, from which OpenGL is
+     * running.
+     */
+    private void updateChunkBuffer() {
+        if (create_lock_w.tryLock()) {// DON'T WAIT TO ACQUIRE LOCK (DON'T LET THE RENDER THREAD WAIT)
+            
+            try {
                 
-                final String key = cx + "." + cz;
-                final Chunk value;
-                
-                if (primary_chunk_buffer.containsKey(key)) {// MOVE ALREADY LOADED CHUNKS
-                    value = primary_chunk_buffer.get(key);
-                    secondary_chunk_buffer.put(key, value);
-                    
-                } else {// LOAD NEW CHUNKS TO SECONDARY BUFFER
-                    final Chunk chunk = new Chunk();
-                    {
-                        createChunk(cx, cz, chunk);
-                        secondary_chunk_buffer.put(key, chunk);
-                        value = chunk;
+                if (!create_buffer.isEmpty()) {
+                    for (Entry entry : create_buffer.entrySet()) {
+
+                        createChunkVbos((Chunk) entry.getValue());
+                        chunk_buffer.put((String) entry.getKey(), (Chunk) entry.getValue());
+
                     }
+
+                    create_buffer.clear();
                 }
                 
-                drawChunk(cx, cz, value);
+            } finally {
+                create_lock_w.unlock();
             }
         }
         
-        // FLIP BUFFERS
-        primary_chunk_buffer.clear();
-        primary_chunk_buffer.putAll(secondary_chunk_buffer);
-        secondary_chunk_buffer.clear();
+        if (dispose_lock_w.tryLock()) {// DON'T WAIT TO ACQUIRE LOCK (DON'T LET THE RENDER THREAD WAIT)
+            
+            try {
+                
+                if (!dispose_buffer.isEmpty()) {
+                    for (String key : dispose_buffer) {
+
+                        clearChunk(chunk_buffer.get(key));
+                        chunk_buffer.remove(key);
+
+                    }
+
+                    dispose_buffer.clear();    
+                }
+                
+            } finally {
+                dispose_lock_w.unlock();
+            }
+        }
     }
     
-    private void createChunk(final int x, final int z, final Chunk chunk) {
-        chunkNoiseGenerator.generateNoise(x, z, chunk);
-        chunkVboGenerator.generateVBOHandles(chunk);
-        chunkVboGenerator.generateVBOs(chunk);
+    /**
+     * This method adds data to create_buffer
+     * @param key The chunk coordinates
+     * @param value The chunk reference
+     */
+    public void addToCreateBuffer(final String key, final Chunk value) {
+        create_lock_w.lock();// WAIT TO ACQUIRE LOCK
+        
+        try {
+            create_buffer.put(key, value);
+        } finally {
+            create_lock_w.unlock();
+        }
     }
     
+    /**
+     * This method adds data to dispose_buffer
+     * @param key The chunk coordinates
+     */
+    public void addToDisposeBuffer(final String key) {
+        dispose_lock_w.lock();// WAIT TO ACQUIRE LOCK
+        
+        try {
+            dispose_buffer.add(key);
+        } finally {
+            dispose_lock_w.unlock();
+        }
+    }
+    
+    // *************************************************************************
+    
+    /**
+     * This method loop through and draw all the chunks
+     */
+    public void drawChunks() {
+        
+        updateChunkBuffer();
+        
+        for (Entry entry : chunk_buffer.entrySet()) {
+            
+            final String key = (String) entry.getKey();
+            final String[] coordinates = key.split(" . ");
+            
+            final int x = Integer.parseInt(coordinates[0]);
+            final int z = Integer.parseInt(coordinates[1]);
+            
+            drawChunk(x, z, (Chunk) entry.getValue());
+        }   
+    }
+    
+    /**
+     * This method push, pop and translate the matrix for a specific chunk
+     * @param x The x coordinate for the given chunk
+     * @param z The z coordinate for the given chunk
+     * @param chunk The chunk to be drawn
+     */
     private void drawChunk(final int x, final int z, final Chunk chunk) {
         
         final int cx_global = x * 16;
@@ -135,6 +183,10 @@ public class ChunkHandler {
         GL11.glPopMatrix();
     }
     
+    /**
+     * This method render a specific chunk
+     * @param chunk The chunk to be drawn
+     */
     public void renderChunk(final Chunk chunk) {
         
         final int primaryVboHandle = chunk.getPrimaryVboHandle();
@@ -165,15 +217,31 @@ public class ChunkHandler {
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
     }
     
+    /**
+     * This method create the VBOs for the given chunk
+     * @param chunk The chunk for which the VBOs will be drawn
+     */
+    private void createChunkVbos(final Chunk chunk) {
+        chunkVboGenerator.generateVBOHandles(chunk);
+        chunkVboGenerator.generateVBOs(chunk);
+    }
+    
+    /**
+     * This method remove the VBOs for all chunks
+     */
     public void clear() {
         
-        for (Chunk chunk : primary_chunk_buffer.values()) {
+        for (Chunk chunk : chunk_buffer.values()) {
             clearChunk(chunk);
         }
         
-        primary_chunk_buffer.clear();
+        chunk_buffer.clear();
     }
     
+    /**
+     * This method remove the VBOs for a given chunk
+     * @param chunk The chunk to be cleared
+     */
     private void clearChunk(final Chunk chunk) {
         
         for (int handle : chunk.getVboHandles()) {

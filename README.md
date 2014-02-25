@@ -1,6 +1,6 @@
 ![JBlox ScreenShot](http://gyazo.com/c185d58390ca9ed8e41310a4a3c89856.png)
 ## What is JBlox?
-JBlox is a furthermore improved version of my previous Minecraft inspired project, Cubic3D. Cubic3D was entirely built upon Display Lists, from which I managed to get some pretty decent performance readings. I decided to abandon Cubic3D because I wanted to digg deeper into OpenGL and use the newer rendering methods, like VBO (Vertex Buffer Object), but mainly because of the poor structure of the project.
+JBlox is a furthermore improved version of my previous Minecraft inspired project, Cubic3D. Cubic3D was entirely built upon Display Lists, from which I managed to get some pretty decent performance readings. I decided to abandon Cubic3D because I wanted to dig deeper into OpenGL and use the newer rendering methods, like VBO (Vertex Buffer Object), but mainly because of the poor structure of the project.
 
 #### Multithreading
 All my Minecraft inspired projects have used multithreading, from the late versions of Cubic3D to the today's version of JBlox. Everything surely can be done in one single thread, look at Minecraft! But in my case, I prefer leaving one thread (the main thread) for all the rendering, while doing calculations and preparations in another. Combining those two and sending information between these without leaving one thread to wait for the other, thus losing performance is a challenging task.

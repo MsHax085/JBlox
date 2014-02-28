@@ -19,7 +19,6 @@ public class TextureProcessor {
     private boolean loadedTextures = false;
     private Texture textures;
     private int id;
-    //private Texture stone;// Temporary
 
     private void loadTextures() {
         
@@ -27,7 +26,6 @@ public class TextureProcessor {
             try {
                 textures = TextureLoader.getTexture("PNG", new FileInputStream("src/jblox/res/textures.png"));
                 id = textures.getTextureID();
-                //stone = TextureLoader.getTexture("PNG", new FileInputStream("src/jblox/res/stone.png"));// Temporary
             } catch (IOException ex) {
                 Logger.getLogger(TextureProcessor.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -38,5 +36,57 @@ public class TextureProcessor {
     public int getTextureId() {
         loadTextures();
         return id;
+    }
+    
+    public float getTextureX1(final byte id, final boolean top, final boolean bottom) {
+        return (1 / ChunkConstants.TEXTURE_COLS) * getActualId(id, top, bottom);
+    }
+    
+    public float getTextureY1(final byte id, final boolean top, final boolean bottom) {
+        return (1 / ChunkConstants.TEXTURE_ROWS) * getActualId(id, top, bottom);
+    }
+    
+    /**
+     * This method convert ID's to texture ID's
+     * @param id The id to be converted into an texture id
+     * @param top Defines whether it's a top face or not
+     * @param bottom Defines whether it's a bottom face or not
+     * @return Returns the texture id
+     */
+    private int getActualId(final byte id, final boolean top, final boolean bottom) {
+        
+        /*
+            0: AIR
+            1: STONE
+            2: GRASS
+            3: DIRT
+            4: GRAVEL
+        */
+        
+        switch (id) {
+            
+            case 1:
+            {
+                return 0;
+            }
+            
+            case 2:
+            {
+                if (top) {
+                    return 2;
+                }
+                
+                if (bottom) {
+                    return 3;
+                }
+                
+                return id - 1;
+            }
+            
+            default:
+            {
+                return id;
+            }
+        }
     }
 }

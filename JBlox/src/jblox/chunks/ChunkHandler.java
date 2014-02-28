@@ -25,10 +25,9 @@ public class ChunkHandler {
     private final Client client;
     private final ChunkProcessor processor;
     private final Thread processorThread;
-    
-    private final ChunkVboGenerator chunkVboGenerator = new ChunkVboGenerator();
-    
-    private final TextureProcessor textures = new TextureProcessor();
+   
+    private final TextureProcessor textureProcessor = new TextureProcessor();
+    private final ChunkVboGenerator chunkVboGenerator = new ChunkVboGenerator(textureProcessor);
 
     private final TreeMap<String, Chunk> chunk_buffer = new TreeMap<>();
     private final TreeMap<String, Chunk> create_buffer = new TreeMap<>();
@@ -192,7 +191,7 @@ public class ChunkHandler {
     public void renderChunk(final Chunk chunk) {
         
         final int primaryVboHandle = chunk.getPrimaryVboHandle();
-        final int textureId = textures.getTextureId();
+        final int textureId = textureProcessor.getTextureId();
         
         for (int handle : chunk.getVboHandles()) {
             

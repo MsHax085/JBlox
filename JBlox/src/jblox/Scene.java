@@ -123,7 +123,7 @@ public class Scene {
         GL11.glRotatef(yaw, 0.0f, 1.0f, 0.0f);
         GL11.glTranslatef(x, y, z);
         
-        GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, floatBuffer(x, 256, z, 0.0f));
+        GL11.glLight(GL11.GL_LIGHT0, GL11.GL_POSITION, floatBuffer(-x, 256, -z, 1.0f));// 0.0f = direction, 1.0f = point
         
         chunkHandler.drawChunks();
     }

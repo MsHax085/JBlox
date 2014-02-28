@@ -4,7 +4,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import jblox.chunks.Chunk;
 import jblox.chunks.ChunkConstants;
-import jblox.generator.noise.SimplexOctaveGenerator;
+import jblox.chunks.TextureProcessor;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL15;
 
@@ -15,6 +15,12 @@ import org.lwjgl.opengl.GL15;
  * @version 1.0
  */
 public class ChunkVboGenerator {
+    
+    private final TextureProcessor textureProcessor;
+    
+    public ChunkVboGenerator(final TextureProcessor textureProcessor) {
+        this.textureProcessor = textureProcessor;
+    }
     
     public void generateVBOHandles(final Chunk chunk) {
         
@@ -47,9 +53,10 @@ public class ChunkVboGenerator {
                     for (byte z = 0; z < 16; z++) {
                         
                         final short y2 = (short) (((handle - primaryVboHandle) * 16) + y1);
+                        final byte id = chunk.getDataAt(ChunkConstants.coordsToIndex(x, y2, z));
                         
                         if (chunk.getDataAt(ChunkConstants.coordsToIndex(x, y2, z)) > 0) {
-                            vboBuffer.put(generateQuad(x, y1, z));
+                            vboBuffer.put(generateQuad(x, y1, z, id));
                         }
                     }
                 }
@@ -68,176 +75,130 @@ public class ChunkVboGenerator {
      *  Quad Generation
     */// -------------------------------------------------------------------------
     
-    private FloatBuffer generateQuad(final byte x, final byte y, final byte z) {// Coords in Chunk
+    private FloatBuffer generateQuad(final byte x, final byte y, final byte z, final byte id) {// Coords in Chunk
         
-        //  Temp Variables
-        final boolean generateFrontQuad = true;
-        final boolean generateBackQuad = true;
-        final boolean generateLeftQuad = true;
-        final boolean generateRightQuad = true;
-        final boolean generateTopQuad = true;
-        final boolean generateBottomQuad = true;
-        
-        final byte bpv = ChunkConstants.BYTES_PER_VERTEX;
-        
-        short quadBufferLength = 0;
-        {
-            quadBufferLength += (generateFrontQuad)     ? bpv : 0;// 32 = Bytes per vertex
-            quadBufferLength += (generateBackQuad)      ? bpv : 0;
-            quadBufferLength += (generateLeftQuad)      ? bpv : 0;
-            quadBufferLength += (generateRightQuad)     ? bpv : 0;
-            quadBufferLength += (generateTopQuad)       ? bpv : 0;
-            quadBufferLength += (generateBottomQuad)    ? bpv : 0;
-        }
-        
-        final FloatBuffer quadBuffer = BufferUtils.createFloatBuffer(quadBufferLength);
+        short quadBufferLength = ChunkConstants.BYTES_PER_VERTEX * 6;
         final float WIDTH = 0.5f;// 0.5f
-        
-        if (generateFrontQuad) {
-            quadBuffer.put(generateFrontQuad(x, y, z, WIDTH));
+       
+        final FloatBuffer quadBuffer = BufferUtils.createFloatBuffer(quadBufferLength);
+        {
+            quadBuffer.put(generateFrontQuad(x, y, z, WIDTH, id));
+            quadBuffer.put(generateBackQuad(x, y, z, WIDTH, id));
+            quadBuffer.put(generateLeftQuad(x, y, z, WIDTH, id));
+            quadBuffer.put(generateRightQuad(x, y, z, WIDTH, id));
+            quadBuffer.put(generateTopQuad(x, y, z, WIDTH, id));
+            quadBuffer.put(generateBottomQuad(x, y, z, WIDTH, id));
+
+            quadBuffer.rewind();
         }
-        
-        if (generateBackQuad) {
-            quadBuffer.put(generateBackQuad(x, y, z, WIDTH));
-        }
-        
-        if (generateLeftQuad) {
-            quadBuffer.put(generateLeftQuad(x, y, z, WIDTH));
-        }
-        
-        if (generateRightQuad) {
-            quadBuffer.put(generateRightQuad(x, y, z, WIDTH));
-        }
-        
-        if (generateTopQuad) {
-            quadBuffer.put(generateTopQuad(x, y, z, WIDTH));
-        }
-        
-        if (generateBottomQuad) {
-            quadBuffer.put(generateBottomQuad(x, y, z, WIDTH));
-        }
-        
-        quadBuffer.rewind();
         
         return quadBuffer;
     }
     
-    private float[] generateFrontQuad(final byte x, final byte y, final byte z, final float width) {
+    private float[] generateFrontQuad(final byte x, final byte y, final byte z, final float width, final byte id) {
         
-        float cols = 16;
-        float x1 = (1 / cols) * 3;
-        float x2 = (1 / cols) * 4;
+        final float tx1 = textureProcessor.getTextureX1(id, false, false);
+        final float tx2 = tx1 + (1 / ChunkConstants.TEXTURE_COLS);
         
-        float rows = 1;
-        float y1 = (1 / rows) * 0;
-        float y2 = (1 / rows) * 1;
+        final float ty1 = textureProcessor.getTextureY1(id, false, false);
+        final float ty2 = ty1 + (1 / ChunkConstants.TEXTURE_ROWS);
         
         final float[] backQuad = {
         //      x          y           z    nx      ny     nz   tx     ty
-         width + x,  width + y,  width + z,  0.0f,  0.45f,  1.0f,  x2,  y1,
-        -width + x,  width + y,  width + z,  0.0f,  0.45f,  1.0f,  x1,  y1,
-        -width + x, -width + y,  width + z,  0.0f,  0.45f,  1.0f,  x1,  y2,
-         width + x, -width + y,  width + z,  0.0f,  0.45f,  1.0f,  x2,  y2};
+         width + x,  width + y,  width + z,  0.0f,  0.4f,  0.4f,  tx2,  ty1,
+        -width + x,  width + y,  width + z,  0.0f,  0.4f,  0.4f,  tx1,  ty1,
+        -width + x, -width + y,  width + z,  0.0f,  0.4f,  0.4f,  tx1,  ty2,
+         width + x, -width + y,  width + z,  0.0f,  0.4f,  0.4f,  tx2,  ty2};
         
         return backQuad;
     }
     
-    private float[] generateBackQuad(final byte x, final byte y, final byte z, final float width) {
+    private float[] generateBackQuad(final byte x, final byte y, final byte z, final float width, final byte id) {
         
-        float cols = 16;
-        float x1 = (1 / cols) * 3;
-        float x2 = (1 / cols) * 4;
+        final float tx1 = textureProcessor.getTextureX1(id, false, false);
+        final float tx2 = tx1 + (1 / ChunkConstants.TEXTURE_COLS);
         
-        float rows = 1;
-        float y1 = (1 / rows) * 0;
-        float y2 = (1 / rows) * 1;
+        final float ty1 = textureProcessor.getTextureY1(id, false, false);
+        final float ty2 = ty1 + (1 / ChunkConstants.TEXTURE_ROWS);
         
         final float[] frontQuad = {
         //      x          y           z    nx      ny     nz   tx     ty
-         width + x,  width + y, -width + z,  0.0f,  0.45f, -1.0f,  x1,  y1,
-        -width + x,  width + y, -width + z,  0.0f,  0.45f, -1.0f,  x2,  y1,
-        -width + x, -width + y, -width + z,  0.0f,  0.45f, -1.0f,  x2,  y2,
-         width + x, -width + y, -width + z,  0.0f,  0.45f, -1.0f,  x1,  y2};
+         width + x,  width + y, -width + z,  0.0f,  0.4f, -0.4f,  tx1,  ty1,
+        -width + x,  width + y, -width + z,  0.0f,  0.4f, -0.4f,  tx2,  ty1,
+        -width + x, -width + y, -width + z,  0.0f,  0.4f, -0.4f,  tx2,  ty2,
+         width + x, -width + y, -width + z,  0.0f,  0.4f, -0.4f,  tx1,  ty2};
 
         return frontQuad;
     }
     
-    private float[] generateLeftQuad(final byte x, final byte y, final byte z, final float width) {
+    private float[] generateLeftQuad(final byte x, final byte y, final byte z, final float width, final byte id) {
         
-        float cols = 16;
-        float x1 = (1 / cols) * 3;
-        float x2 = (1 / cols) * 4;
+        final float tx1 = textureProcessor.getTextureX1(id, false, false);
+        final float tx2 = tx1 + (1 / ChunkConstants.TEXTURE_COLS);
         
-        float rows = 1;
-        float y1 = (1 / rows) * 0;
-        float y2 = (1 / rows) * 1;
+        final float ty1 = textureProcessor.getTextureY1(id, false, false);
+        final float ty2 = ty1 + (1 / ChunkConstants.TEXTURE_ROWS);
         
         final float[] leftQuad = {
         //      x          y           z    nx      ny     nz   tx     ty
-        -width + x,  width + y, -width + z, -1.0f,  0.45f,  0.0f,  x1,  y1,
-        -width + x,  width + y,  width + z, -1.0f,  0.45f,  0.0f,  x2,  y1,
-        -width + x, -width + y,  width + z, -1.0f,  0.45f,  0.0f,  x2,  y2,
-        -width + x, -width + y, -width + z, -1.0f,  0.45f,  0.0f,  x1,  y2};
+        -width + x,  width + y, -width + z, -0.4f,  0.4f,  0.0f,  tx1,  ty1,
+        -width + x,  width + y,  width + z, -0.4f,  0.4f,  0.0f,  tx2,  ty1,
+        -width + x, -width + y,  width + z, -0.4f,  0.4f,  0.0f,  tx2,  ty2,
+        -width + x, -width + y, -width + z, -0.4f,  0.4f,  0.0f,  tx1,  ty2};
 
         return leftQuad;
     }
     
-    private float[] generateRightQuad(final byte x, final byte y, final byte z, final float width) {
+    private float[] generateRightQuad(final byte x, final byte y, final byte z, final float width, final byte id) {
         
-        float cols = 16;
-        float x1 = (1 / cols) * 3;
-        float x2 = (1 / cols) * 4;
+        final float tx1 = textureProcessor.getTextureX1(id, false, false);
+        final float tx2 = tx1 + (1 / ChunkConstants.TEXTURE_COLS);
         
-        float rows = 1;
-        float y1 = (1 / rows) * 0;
-        float y2 = (1 / rows) * 1;
+        final float ty1 = textureProcessor.getTextureY1(id, false, false);
+        final float ty2 = ty1 + (1 / ChunkConstants.TEXTURE_ROWS);
         
         final float[] rightQuad = {
         //      x          y           z    nx      ny     nz   tx     ty
-        width + x,  width + y, -width + z,  1.0f,  0.45f,  0.0f,  x2,  y1,
-        width + x,  width + y,  width + z,  1.0f,  0.45f,  0.0f,  x1,  y1,
-        width + x, -width + y,  width + z,  1.0f,  0.45f,  0.0f,  x1,  y2,
-        width + x, -width + y, -width + z,  1.0f,  0.45f,  0.0f,  x2,  y2};
+        width + x,  width + y, -width + z,  0.4f,  0.4f,  0.0f,  tx2,  ty1,
+        width + x,  width + y,  width + z,  0.4f,  0.4f,  0.0f,  tx1,  ty1,
+        width + x, -width + y,  width + z,  0.4f,  0.4f,  0.0f,  tx1,  ty2,
+        width + x, -width + y, -width + z,  0.4f,  0.4f,  0.0f,  tx2,  ty2};
 
         return rightQuad;
     }
     
-    private float[] generateTopQuad(final byte x, final byte y, final byte z, final float width) {
+    private float[] generateTopQuad(final byte x, final byte y, final byte z, final float width, final byte id) {
         
-        float cols = 16;
-        float x1 = (1 / cols) * 4;
-        float x2 = (1 / cols) * 5;
+        final float tx1 = textureProcessor.getTextureX1(id, true, false);
+        final float tx2 = tx1 + (1 / ChunkConstants.TEXTURE_COLS);
         
-        float rows = 1;
-        float y1 = (1 / rows) * 0;
-        float y2 = (1 / rows) * 1;
+        final float ty1 = textureProcessor.getTextureY1(id, true, false);
+        final float ty2 = ty1 + (1 / ChunkConstants.TEXTURE_ROWS);
         
         final float[] topQuad = {
         //      x          y           z    nx      ny     nz   tx     ty
-        -width + x,  width + y, -width + z,  0.0f,  1.0f,  0.0f,  x1,  y1,
-        -width + x,  width + y,  width + z,  0.0f,  1.0f,  0.0f,  x1,  y2,
-         width + x,  width + y,  width + z,  0.0f,  1.0f,  0.0f,  x2,  y2,
-         width + x,  width + y, -width + z,  0.0f,  1.0f,  0.0f,  x2,  y1};
+        -width + x,  width + y, -width + z,  0.0f,  0.8f,  0.0f,  tx1,  ty1,
+        -width + x,  width + y,  width + z,  0.0f,  0.8f,  0.0f,  tx1,  ty2,
+         width + x,  width + y,  width + z,  0.0f,  0.8f,  0.0f,  tx2,  ty2,
+         width + x,  width + y, -width + z,  0.0f,  0.8f,  0.0f,  tx2,  ty1};
 
         return topQuad;
     }
     
-    private float[] generateBottomQuad(final byte x, final byte y, final byte z, final float width) {
+    private float[] generateBottomQuad(final byte x, final byte y, final byte z, final float width, final byte id) {
         
-        float cols = 16;
-        float x1 = (1 / cols) * 2;
-        float x2 = (1 / cols) * 3;
+        final float tx1 = textureProcessor.getTextureX1(id, false, true);
+        final float tx2 = tx1 + (1 / ChunkConstants.TEXTURE_COLS);
         
-        float rows = 1;
-        float y1 = (1 / rows) * 0;
-        float y2 = (1 / rows) * 1;
+        final float ty1 = textureProcessor.getTextureY1(id, false, true);
+        final float ty2 = ty1 + (1 / ChunkConstants.TEXTURE_ROWS);
         
         final float[] bottomQuad = {
         //      x          y           z    nx      ny     nz   tx     ty
-        -width + x, -width + y, -width + z,  0.0f, 0.45f,  0.0f,  x1,  y1,
-        -width + x, -width + y,  width + z,  0.0f, 0.45f,  0.0f,  x1,  y2,
-         width + x, -width + y,  width + z,  0.0f, 0.45f,  0.0f,  x2,  y2,
-         width + x, -width + y, -width + z,  0.0f, 0.45f,  0.0f,  x2,  y1};
+        -width + x, -width + y, -width + z,  0.0f, 0.2f,  0.0f,  tx1,  ty1,
+        -width + x, -width + y,  width + z,  0.0f, 0.2f,  0.0f,  tx1,  ty2,
+         width + x, -width + y,  width + z,  0.0f, 0.2f,  0.0f,  tx2,  ty2,
+         width + x, -width + y, -width + z,  0.0f, 0.2f,  0.0f,  tx2,  ty1};
 
         return bottomQuad;
     }

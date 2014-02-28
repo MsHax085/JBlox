@@ -17,7 +17,7 @@ public class ChunkConstants {
     public static final float TEXTURE_ROWS = 1;
     public static final byte TEXTURE_SIZE = 32;
     
-    public final static int coordsToIndex(final byte x, final short y, final byte z) {// Coords in chunk
+    public final static int coordsToIndex(final byte x, final int y, final byte z) {// Coords in chunk
         return (x * 16 + z) * HEIGHT + y;
     }
 }

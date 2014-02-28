@@ -12,7 +12,7 @@ public class Chunk {
     private final int[] vboHandles = new int[16];
     private int primaryVboHandle = 0;
     
-    private short uppermostBlockY = 0;
+    private int uppermostBlockY = 0;
     
     // Generated noise-data + loaded & modified data
     private final byte[] chunkData = new byte[16 * 16 * ChunkConstants.HEIGHT];
@@ -31,7 +31,7 @@ public class Chunk {
         return primaryVboHandle;
     }
     
-    public short getUppermostBlockY() {
+    public int getUppermostBlockY() {
         return uppermostBlockY;
     }
     
@@ -47,7 +47,7 @@ public class Chunk {
         primaryVboHandle = id;
     }
     
-    public void setUppermostBlockY(final short y) {
+    public void setUppermostBlockY(final int y) {
         uppermostBlockY = y;
     }
 }

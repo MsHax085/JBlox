@@ -12,6 +12,7 @@ import static jblox.chunks.ChunkConstants.VBO_BUFFER_LENGTH;
 import static jblox.chunks.ChunkConstants.VERTEX_DATA_LENGTH;
 import jblox.generator.ChunkVboGenerator;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL15;
 
 /**
@@ -204,6 +205,9 @@ public class ChunkHandler {
             
             {
                 GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
+
+                GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+                GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
                 GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, handle);
 
                 GL11.glVertexPointer(3, GL11.GL_FLOAT, BYTES_PER_VERTEX, 0);

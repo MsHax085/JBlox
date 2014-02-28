@@ -21,9 +21,9 @@ public class ChunkNoiseGenerator {
     private final SimplexOctaveGenerator particles;
     
     private final int GROUND_ELEVATION = 30;
-    private final int GROUND_MAGNITUDE = 4;
-    private final int HILLS_MAGNITUDE = 8;
-    private final int MOUNTAINS_MAGNITUDE = 16;
+    private final int GROUND_MAGNITUDE = 6;
+    private final int HILLS_MAGNITUDE = 12;
+    private final int MOUNTAINS_MAGNITUDE = 8;
     
     public ChunkNoiseGenerator() {
         this(new Random().nextInt(Integer.MAX_VALUE));
@@ -38,7 +38,7 @@ public class ChunkNoiseGenerator {
         
         ground.setScale(1 / 96.0);
         hills.setScale(1 / 32.0);
-        mountains.setScale(1 / 64.0);
+        mountains.setScale(1 / 32.0);
         particles.setScale(1 / 16.0);
         
     }
@@ -55,17 +55,20 @@ public class ChunkNoiseGenerator {
                 final double hills_height     = hills.noise(global_x, global_z, 0.8, 0.5)     * HILLS_MAGNITUDE + GROUND_ELEVATION;
                 final double mountains_height = mountains.noise(global_x, global_z, 1.5, 0.6) * MOUNTAINS_MAGNITUDE + GROUND_ELEVATION;
                 
-                short y = 0;
+                int y = 0;
+                int lowestY = 0;
+                
                 for (; y < groundHeight; y++) {
                     
                     final double PARTICLES_NOISE = particles.noise(global_x, y, global_z, 0.4, 0.6);
                     
-                    if (PARTICLES_NOISE < 0.9 || y == 0) {
+                    if (PARTICLES_NOISE < 0.9) {
                         chunk.setDataId(ChunkConstants.coordsToIndex(x, y, z),
                                         getBlockIdByDepth(y, mountains_height));
                     } else {
-                        //blocks[locationToByteIndex(x, y, z)] = 4;
-                        // WATER
+                        if (y < lowestY) {
+                            lowestY = y - 1;// AIR - 1 = GROUND
+                        }
                     }
                     
                 }
@@ -77,6 +80,10 @@ public class ChunkNoiseGenerator {
                     if (PARTICLES_NOISE < 0.9) {
                         chunk.setDataId(ChunkConstants.coordsToIndex(x, y, z),
                                         getBlockIdByDepth(y, mountains_height));
+                    } else {
+                        if (y < lowestY) {
+                            lowestY = y - 1;// AIR - 1 = GROUND
+                        }
                     }
                     
                 }
@@ -88,6 +95,10 @@ public class ChunkNoiseGenerator {
                     if (PARTICLES_NOISE < 0.9) {
                         chunk.setDataId(ChunkConstants.coordsToIndex(x, y, z),
                                         getBlockIdByDepth(y, mountains_height));
+                    } else {
+                        if (y < lowestY) {
+                            lowestY = y - 1;// AIR - 1 = GROUND
+                        }
                     }
                     
                 }

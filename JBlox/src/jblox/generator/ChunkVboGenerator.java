@@ -124,72 +124,120 @@ public class ChunkVboGenerator {
     
     private float[] generateFrontQuad(final byte x, final byte y, final byte z, final float width) {
         
+        float cols = 16;
+        float x1 = (1 / cols) * 3;
+        float x2 = (1 / cols) * 4;
+        
+        float rows = 1;
+        float y1 = (1 / rows) * 0;
+        float y2 = (1 / rows) * 1;
+        
         final float[] backQuad = {
         //      x          y           z    nx      ny     nz   tx     ty
-         width + x,  width + y,  width + z,  0.0f,  0.45f,  1.0f,  1.0f,  0.0f,
-        -width + x,  width + y,  width + z,  0.0f,  0.45f,  1.0f,  0.0f,  0.0f,
-        -width + x, -width + y,  width + z,  0.0f,  0.45f,  1.0f,  0.0f,  1.0f,
-         width + x, -width + y,  width + z,  0.0f,  0.45f,  1.0f,  1.0f,  1.0f};
+         width + x,  width + y,  width + z,  0.0f,  0.45f,  1.0f,  x2,  y1,
+        -width + x,  width + y,  width + z,  0.0f,  0.45f,  1.0f,  x1,  y1,
+        -width + x, -width + y,  width + z,  0.0f,  0.45f,  1.0f,  x1,  y2,
+         width + x, -width + y,  width + z,  0.0f,  0.45f,  1.0f,  x2,  y2};
         
         return backQuad;
     }
     
     private float[] generateBackQuad(final byte x, final byte y, final byte z, final float width) {
         
+        float cols = 16;
+        float x1 = (1 / cols) * 3;
+        float x2 = (1 / cols) * 4;
+        
+        float rows = 1;
+        float y1 = (1 / rows) * 0;
+        float y2 = (1 / rows) * 1;
+        
         final float[] frontQuad = {
         //      x          y           z    nx      ny     nz   tx     ty
-         width + x,  width + y, -width + z,  0.0f,  0.45f, -1.0f,  0.0f,  0.0f,
-        -width + x,  width + y, -width + z,  0.0f,  0.45f, -1.0f,  1.0f,  0.0f,
-        -width + x, -width + y, -width + z,  0.0f,  0.45f, -1.0f,  1.0f,  1.0f,
-         width + x, -width + y, -width + z,  0.0f,  0.45f, -1.0f,  0.0f,  1.0f};
+         width + x,  width + y, -width + z,  0.0f,  0.45f, -1.0f,  x1,  y1,
+        -width + x,  width + y, -width + z,  0.0f,  0.45f, -1.0f,  x2,  y1,
+        -width + x, -width + y, -width + z,  0.0f,  0.45f, -1.0f,  x2,  y2,
+         width + x, -width + y, -width + z,  0.0f,  0.45f, -1.0f,  x1,  y2};
 
         return frontQuad;
     }
     
     private float[] generateLeftQuad(final byte x, final byte y, final byte z, final float width) {
         
+        float cols = 16;
+        float x1 = (1 / cols) * 3;
+        float x2 = (1 / cols) * 4;
+        
+        float rows = 1;
+        float y1 = (1 / rows) * 0;
+        float y2 = (1 / rows) * 1;
+        
         final float[] leftQuad = {
         //      x          y           z    nx      ny     nz   tx     ty
-        -width + x,  width + y, -width + z, -1.0f,  0.45f,  0.0f,  0.0f,  0.0f,
-        -width + x,  width + y,  width + z, -1.0f,  0.45f,  0.0f,  1.0f,  0.0f,
-        -width + x, -width + y,  width + z, -1.0f,  0.45f,  0.0f,  1.0f,  1.0f,
-        -width + x, -width + y, -width + z, -1.0f,  0.45f,  0.0f,  0.0f,  1.0f};
+        -width + x,  width + y, -width + z, -1.0f,  0.45f,  0.0f,  x1,  y1,
+        -width + x,  width + y,  width + z, -1.0f,  0.45f,  0.0f,  x2,  y1,
+        -width + x, -width + y,  width + z, -1.0f,  0.45f,  0.0f,  x2,  y2,
+        -width + x, -width + y, -width + z, -1.0f,  0.45f,  0.0f,  x1,  y2};
 
         return leftQuad;
     }
     
     private float[] generateRightQuad(final byte x, final byte y, final byte z, final float width) {
         
+        float cols = 16;
+        float x1 = (1 / cols) * 3;
+        float x2 = (1 / cols) * 4;
+        
+        float rows = 1;
+        float y1 = (1 / rows) * 0;
+        float y2 = (1 / rows) * 1;
+        
         final float[] rightQuad = {
         //      x          y           z    nx      ny     nz   tx     ty
-        width + x,  width + y, -width + z,  1.0f,  0.45f,  0.0f,  1.0f,  0.0f,
-        width + x,  width + y,  width + z,  1.0f,  0.45f,  0.0f,  0.0f,  0.0f,
-        width + x, -width + y,  width + z,  1.0f,  0.45f,  0.0f,  0.0f,  1.0f,
-        width + x, -width + y, -width + z,  1.0f,  0.45f,  0.0f,  1.0f,  1.0f};
+        width + x,  width + y, -width + z,  1.0f,  0.45f,  0.0f,  x2,  y1,
+        width + x,  width + y,  width + z,  1.0f,  0.45f,  0.0f,  x1,  y1,
+        width + x, -width + y,  width + z,  1.0f,  0.45f,  0.0f,  x1,  y2,
+        width + x, -width + y, -width + z,  1.0f,  0.45f,  0.0f,  x2,  y2};
 
         return rightQuad;
     }
     
     private float[] generateTopQuad(final byte x, final byte y, final byte z, final float width) {
         
+        float cols = 16;
+        float x1 = (1 / cols) * 4;
+        float x2 = (1 / cols) * 5;
+        
+        float rows = 1;
+        float y1 = (1 / rows) * 0;
+        float y2 = (1 / rows) * 1;
+        
         final float[] topQuad = {
         //      x          y           z    nx      ny     nz   tx     ty
-        -width + x,  width + y, -width + z,  0.0f,  1.0f,  0.0f,  0.0f,  0.0f,
-        -width + x,  width + y,  width + z,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
-         width + x,  width + y,  width + z,  0.0f,  1.0f,  0.0f,  1.0f,  1.0f,
-         width + x,  width + y, -width + z,  0.0f,  1.0f,  0.0f,  1.0f,  0.0f};
+        -width + x,  width + y, -width + z,  0.0f,  1.0f,  0.0f,  x1,  y1,
+        -width + x,  width + y,  width + z,  0.0f,  1.0f,  0.0f,  x1,  y2,
+         width + x,  width + y,  width + z,  0.0f,  1.0f,  0.0f,  x2,  y2,
+         width + x,  width + y, -width + z,  0.0f,  1.0f,  0.0f,  x2,  y1};
 
         return topQuad;
     }
     
     private float[] generateBottomQuad(final byte x, final byte y, final byte z, final float width) {
         
+        float cols = 16;
+        float x1 = (1 / cols) * 2;
+        float x2 = (1 / cols) * 3;
+        
+        float rows = 1;
+        float y1 = (1 / rows) * 0;
+        float y2 = (1 / rows) * 1;
+        
         final float[] bottomQuad = {
         //      x          y           z    nx      ny     nz   tx     ty
-        -width + x, -width + y, -width + z,  0.0f, -1.0f,  0.0f,  0.0f,  0.0f,
-        -width + x, -width + y,  width + z,  0.0f, -1.0f,  0.0f,  0.0f,  1.0f,
-         width + x, -width + y,  width + z,  0.0f, -1.0f,  0.0f,  1.0f,  1.0f,
-         width + x, -width + y, -width + z,  0.0f, -1.0f,  0.0f,  1.0f,  0.0f};
+        -width + x, -width + y, -width + z,  0.0f, 0.45f,  0.0f,  x1,  y1,
+        -width + x, -width + y,  width + z,  0.0f, 0.45f,  0.0f,  x1,  y2,
+         width + x, -width + y,  width + z,  0.0f, 0.45f,  0.0f,  x2,  y2,
+         width + x, -width + y, -width + z,  0.0f, 0.45f,  0.0f,  x2,  y1};
 
         return bottomQuad;
     }

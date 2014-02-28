@@ -39,7 +39,7 @@ public class ChunkProcessor implements Runnable {
             processChunks();
             
             try {
-                Thread.sleep(200);
+                Thread.sleep(200);// TODO: Determine by render-radius, longer = slower
             } catch (InterruptedException ex) {
                 Logger.getLogger(ChunkProcessor.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -79,7 +79,10 @@ public class ChunkProcessor implements Runnable {
                 } else {// CREATE NEW CHUNKS
                     final Chunk chunk = new Chunk();
                     chunkNoiseGenerator.generateNoise(cx, cz, chunk);
-                    
+                    /*
+                     * TODO: Prepare block arrays to determine which to be
+                     * visible in the VBO's.
+                    */
                     chunk_buffer_copy.add(key);
                     handler.addToCreateBuffer(key, chunk);
                 }

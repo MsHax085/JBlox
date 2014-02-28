@@ -17,22 +17,26 @@ import org.newdawn.slick.opengl.TextureLoader;
 public class TextureProcessor {
     
     private boolean loadedTextures = false;
-    private Texture stone;
+    private Texture textures;
+    private int id;
+    //private Texture stone;// Temporary
 
     private void loadTextures() {
         
         if (!loadedTextures) {
             try {
-                stone = TextureLoader.getTexture("PNG", new FileInputStream("src/jblox/res/stone.png"));// Temporary
+                textures = TextureLoader.getTexture("PNG", new FileInputStream("src/jblox/res/textures.png"));
+                id = textures.getTextureID();
+                //stone = TextureLoader.getTexture("PNG", new FileInputStream("src/jblox/res/stone.png"));// Temporary
             } catch (IOException ex) {
                 Logger.getLogger(TextureProcessor.class.getName()).log(Level.SEVERE, null, ex);
             }
+            loadedTextures = true;
         }
-        loadedTextures = true;
     }
     
-    public Texture getTexture(final String type) {
+    public int getTextureId() {
         loadTextures();
-        return stone;// Temporary
+        return id;
     }
 }

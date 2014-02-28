@@ -68,7 +68,7 @@ public class ChunkHandler {
      * the writelock after the reading is done. Using read- and writelocks is not
      * an option in this case.
      * 
-     * This method will be called from the main thread, from which OpenGL is
+     * This method may only be called from the main thread, from which OpenGL is
      * running.
      */
     private void updateChunkBuffer() {
@@ -115,6 +115,7 @@ public class ChunkHandler {
     
     /**
      * This method adds data to create_buffer
+     * This method may only be called from the secondary thread
      * @param key The chunk coordinates
      * @param value The chunk reference
      */
@@ -130,6 +131,7 @@ public class ChunkHandler {
     
     /**
      * This method adds data to dispose_buffer
+     * This method may only be called from the secondary thread
      * @param key The chunk coordinates
      */
     public void addToDisposeBuffer(final String key) {
@@ -160,7 +162,7 @@ public class ChunkHandler {
             final int z = Integer.parseInt(coordinates[1]);
             
             drawChunk(x, z, (Chunk) entry.getValue());
-        }   
+        }
     }
     
     /**
@@ -190,7 +192,7 @@ public class ChunkHandler {
     public void renderChunk(final Chunk chunk) {
         
         final int primaryVboHandle = chunk.getPrimaryVboHandle();
-        final int stoneTextureId = textures.getTexture("STONE").getTextureID();
+        final int textureId = textures.getTextureId();
         
         for (int handle : chunk.getVboHandles()) {
             
@@ -202,7 +204,7 @@ public class ChunkHandler {
             GL11.glTranslatef(0, (handle - primaryVboHandle) * 16, 0);// TRANSLATE VBO ALONG Y-AXIS
             
             {
-                GL11.glBindTexture(GL11.GL_TEXTURE_2D, stoneTextureId);
+                GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
                 GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, handle);
 
                 GL11.glVertexPointer(3, GL11.GL_FLOAT, BYTES_PER_VERTEX, 0);

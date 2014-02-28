@@ -7,7 +7,7 @@ package jblox.chunks;
 public class ChunkConstants {
     
     public static final short HEIGHT = 256;// Chunk Height
-    public static final byte RENDER_RADIUS = 4;
+    public static final byte RENDER_RADIUS = 1;
 
     public static final byte VERTEX_DATA_LENGTH = 8;
     public static final byte BYTES_PER_VERTEX = 32;

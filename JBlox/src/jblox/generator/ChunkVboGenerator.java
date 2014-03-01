@@ -24,39 +24,37 @@ public class ChunkVboGenerator {
     
     public void generateVBOHandles(final Chunk chunk) {
         
-        final int vboChunks = (int) Math.ceil(chunk.getUppermostBlockY() / 16.0);
+        final byte vboChunks = (byte) Math.ceil(chunk.getUppermostBlockY() / 16.0);
         final IntBuffer buffer = BufferUtils.createIntBuffer(vboChunks);
         
         GL15.glGenBuffers(buffer);
         
-        chunk.setPrimaryVboHandle(buffer.get(0));
-        
         for (byte intHandle = 0; intHandle < vboChunks; intHandle++) {
             chunk.setVboHandle(intHandle, buffer.get(intHandle));
         }
+        
+        chunk.setLastVboHandleIndex((byte) (vboChunks - 1));
     }
     
     public void generateVBOs(final Chunk chunk) {
         
-        final int primaryVboHandle = chunk.getPrimaryVboHandle();
+        final int[] vboHandles = chunk.getVboHandles();
+        final byte lastHandleIndex = chunk.getLastVboHandleIndex();// Last in array
         
-        for (int handle : chunk.getVboHandles()) {
-            
-            if (!(handle > 0)) {
-                break;
-            }
+        for (byte index = lastHandleIndex; index > -1; index--) {
             
             final FloatBuffer vboBuffer = BufferUtils.createFloatBuffer(ChunkConstants.VBO_BUFFER_LENGTH);
+            final int handle = vboHandles[index];
             
-            for (byte y1 = 0; y1 < 16; y1++) {
+            for (byte y = 0; y < 16; y++) {
                 for (byte x = 0; x < 16; x++) {
                     for (byte z = 0; z < 16; z++) {
                         
-                        final short y2 = (short) (((handle - primaryVboHandle) * 16) + y1);
-                        final byte id = chunk.getDataAt(ChunkConstants.coordsToIndex(x, y2, z));
+                        final short global_y = (short) ((index * 16) + y);
+                        final byte id = chunk.getVisibleDataAt(x, global_y, z);
                         
-                        if (chunk.getDataAt(ChunkConstants.coordsToIndex(x, y2, z)) > 0) {
-                            vboBuffer.put(generateQuad(x, y1, z, id));
+                        if (chunk.getVisibleDataAt(x, global_y, z) > 0) {
+                            vboBuffer.put(generateQuad(x, y, z, id));
                         }
                     }
                 }

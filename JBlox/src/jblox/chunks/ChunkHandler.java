@@ -1,5 +1,6 @@
 package jblox.chunks;
 
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 import jblox.client.Client;
@@ -11,8 +12,9 @@ import static jblox.chunks.ChunkConstants.BYTES_PER_VERTEX;
 import static jblox.chunks.ChunkConstants.VBO_BUFFER_LENGTH;
 import static jblox.chunks.ChunkConstants.VERTEX_DATA_LENGTH;
 import jblox.generator.ChunkVboGenerator;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
+import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL15;
 
 /**
@@ -191,17 +193,16 @@ public class ChunkHandler {
      */
     public void renderChunk(final Chunk chunk) {
         
-        final int primaryVboHandle = chunk.getPrimaryVboHandle();
+        final int[] vboHandles = chunk.getVboHandles();
+        final byte lastHandleIndex = chunk.getLastVboHandleIndex();// Last in array
         final int textureId = textureProcessor.getTextureId();
         
-        for (int handle : chunk.getVboHandles()) {
+        for (byte index = lastHandleIndex; index > -1; index--) {
             
-            if (!(handle > 0)) {// 0 IF NO VBO
-                break;
-            }
+            final int handle = vboHandles[index];
             
             GL11.glPushMatrix();
-            GL11.glTranslatef(0, (handle - primaryVboHandle) * 16, 0);// TRANSLATE VBO ALONG Y-AXIS
+            GL11.glTranslatef(0, index * 16, 0);// TRANSLATE VBO ALONG Y-AXIS
             
             {
                 GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);

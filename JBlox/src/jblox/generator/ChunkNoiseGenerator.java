@@ -2,7 +2,6 @@ package jblox.generator;
 
 import java.util.Random;
 import jblox.chunks.Chunk;
-import jblox.chunks.ChunkConstants;
 import jblox.generator.noise.SimplexOctaveGenerator;
 
 /**
@@ -55,20 +54,14 @@ public class ChunkNoiseGenerator {
                 final double hills_height     = hills.noise(global_x, global_z, 0.8, 0.5)     * HILLS_MAGNITUDE + GROUND_ELEVATION;
                 final double mountains_height = mountains.noise(global_x, global_z, 1.5, 0.6) * MOUNTAINS_MAGNITUDE + GROUND_ELEVATION;
                 
-                int y = 0;
-                int lowestY = 0;
+                short y = 0;
                 
                 for (; y < groundHeight; y++) {
                     
                     final double PARTICLES_NOISE = particles.noise(global_x, y, global_z, 0.4, 0.6);
                     
                     if (PARTICLES_NOISE < 0.9) {
-                        chunk.setDataId(ChunkConstants.coordsToIndex(x, y, z),
-                                        getBlockIdByDepth(y, mountains_height));
-                    } else {
-                        if (y < lowestY) {
-                            lowestY = y - 1;// AIR - 1 = GROUND
-                        }
+                        chunk.setDataId(x, y, z, getBlockIdByDepth(y, mountains_height));
                     }
                     
                 }
@@ -78,12 +71,7 @@ public class ChunkNoiseGenerator {
                     final double PARTICLES_NOISE = particles.noise(global_x, y, global_z, 0.3, 0.5);
                     
                     if (PARTICLES_NOISE < 0.9) {
-                        chunk.setDataId(ChunkConstants.coordsToIndex(x, y, z),
-                                        getBlockIdByDepth(y, mountains_height));
-                    } else {
-                        if (y < lowestY) {
-                            lowestY = y - 1;// AIR - 1 = GROUND
-                        }
+                        chunk.setDataId(x, y, z, getBlockIdByDepth(y, mountains_height));
                     }
                     
                 }
@@ -93,12 +81,7 @@ public class ChunkNoiseGenerator {
                     final double PARTICLES_NOISE = particles.noise(global_x, y, global_z, 0.3, 0.5);
                     
                     if (PARTICLES_NOISE < 0.9) {
-                        chunk.setDataId(ChunkConstants.coordsToIndex(x, y, z),
-                                        getBlockIdByDepth(y, mountains_height));
-                    } else {
-                        if (y < lowestY) {
-                            lowestY = y - 1;// AIR - 1 = GROUND
-                        }
+                        chunk.setDataId(x, y, z, getBlockIdByDepth(y, mountains_height));
                     }
                     
                 }

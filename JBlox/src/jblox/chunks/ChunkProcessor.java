@@ -79,7 +79,7 @@ public class ChunkProcessor implements Runnable {
                 } else {// CREATE NEW CHUNKS
                     final Chunk chunk = new Chunk();
                     chunkNoiseGenerator.generateNoise(cx, cz, chunk);
-                    //determineVisibleChunkData(chunk);
+                    determineVisibleChunkData(chunk);
                     
                     chunk_buffer_copy.add(key);
                     handler.addToCreateBuffer(key, chunk);
@@ -97,9 +97,9 @@ public class ChunkProcessor implements Runnable {
         }
     }
     
-    /*private void determineVisibleChunkData(final Chunk chunk) {
+    private void determineVisibleChunkData(final Chunk chunk) {
         
-        for (int y = chunk.getLowermostBlockY(); y <= chunk.getUppermostBlockY(); y++) {
+        for (short y = 0; y <= chunk.getUppermostBlockY(); y++) {
             for (byte x = 0; x < 16; x++) {
                 for (byte z = 0; z < 16; z++) {
                 
@@ -110,30 +110,36 @@ public class ChunkProcessor implements Runnable {
                     
                     if (y - 1 < 0 ||
                         y + 1 >= ChunkConstants.HEIGHT ||
-                        chunk.getDataAt(x, y + 1, z) == 0) {
-                        
-                        chunk.addVisibleDataId(new int[]{x,y,z});
-                        continue;
-                    }
-                    
-                    if (x - 1 < 0 ||
+                        x - 1 < 0 ||
                         x + 1 > 15 ||
-                        chunk.getDataAt((byte) (x - 1), y, z) == 0 ||
-                        chunk.getDataAt((byte) (x + 1), y, z) == 0) {
+                        z - 1 < 0 ||
+                        z + 1 > 15) {
                         
-                        chunk.addVisibleDataId(new int[]{x,y,z});
+                        chunk.setVisibleDataId(x, y, z, id);
                         continue;
                     }
                     
-                    if (z - 1 < 0 ||
-                        z + 1 > 15 ||
-                        chunk.getDataAt(x, y, (byte) (z - 1)) == 0 ||
-                        chunk.getDataAt(x, y, (byte) (z + 1)) == 0) {
+                    if (chunk.getDataAt(x, (short) (y + 1), z) == 0 ||
+                        chunk.getDataAt(x, (short) (y - 1), z) == 0) {
                         
-                        chunk.addVisibleDataId(new int[]{x,y,z,id});
+                        chunk.setVisibleDataId(x, y, z, id);
+                        continue;
+                    }
+                    
+                    if (chunk.getDataAt((byte) (x + 1), y, z) == 0 ||
+                        chunk.getDataAt((byte) (x - 1), y, z) == 0) {
+                        
+                        chunk.setVisibleDataId(x, y, z, id);
+                        continue;
+                    }
+                    
+                    if (chunk.getDataAt(x, y, (byte) (z + 1)) == 0 ||
+                        chunk.getDataAt(x, y, (byte) (z - 1)) == 0) {
+                        
+                        chunk.setVisibleDataId(x, y, z, id);
                     }
                 }
             }
         }
-    }*/
+    }
 }

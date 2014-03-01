@@ -1,6 +1,5 @@
 package jblox.chunks;
 
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 import jblox.client.Client;
@@ -12,9 +11,7 @@ import static jblox.chunks.ChunkConstants.BYTES_PER_VERTEX;
 import static jblox.chunks.ChunkConstants.VBO_BUFFER_LENGTH;
 import static jblox.chunks.ChunkConstants.VERTEX_DATA_LENGTH;
 import jblox.generator.ChunkVboGenerator;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL15;
 
 /**

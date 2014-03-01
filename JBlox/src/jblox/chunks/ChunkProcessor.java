@@ -108,8 +108,44 @@ public class ChunkProcessor implements Runnable {
                         continue;
                     }
                     
-                    if (y - 1 < 0 ||
-                        y + 1 >= ChunkConstants.HEIGHT ||
+                    // BOTTOM LAYER
+                    if (y == 0 &&
+                        (chunk.getDataAt((byte) (x - 1), y, z) == 0 ||
+                        chunk.getDataAt((byte) (x + 1), y, z) == 0 ||
+                        chunk.getDataAt(x, y, (byte) (z - 1)) == 0 ||
+                        chunk.getDataAt(x, y, (byte) (z + 1)) == 0)) {
+                        
+                        chunk.setVisibleDataId(x, y, z, id);
+                        continue;
+                    }
+                    
+                    // TOP LAYER
+                    if (y == ChunkConstants.HEIGHT - 1 &&
+                        (chunk.getDataAt((byte) (x - 1), y, z) == 0 ||
+                        chunk.getDataAt((byte) (x + 1), y, z) == 0 ||
+                        chunk.getDataAt(x, y, (byte) (z - 1)) == 0 ||
+                        chunk.getDataAt(x, y, (byte) (z + 1)) == 0)) {
+                        
+                        chunk.setVisibleDataId(x, y, z, id);
+                        continue;
+                    }
+                    
+                    // OTHER LAYERS
+                    if (y > 0 &&
+                        y < ChunkConstants.HEIGHT - 1 &&
+                        (chunk.getDataAt((byte) (x - 1), y, z) == 0 ||
+                        chunk.getDataAt((byte) (x + 1), y, z) == 0 ||
+                        chunk.getDataAt(x, y, (byte) (z - 1)) == 0 ||
+                        chunk.getDataAt(x, y, (byte) (z + 1)) == 0 ||
+                        chunk.getDataAt(x, (short) (y - 1), z) == 0 ||
+                        chunk.getDataAt(x, (short) (y + 1), z) == 0)) {
+                        
+                        chunk.setVisibleDataId(x, y, z, id);
+                    }
+                    
+                    /*
+                    if ((y == 0 && chunk.getDataAt(x, (short) (y + 1), z) == 0) ||
+                        (y == ChunkConstants.HEIGHT - 1 && chunk.getDataAt(x, (short) (y - 1), z) == 0) ||
                         x - 1 < 0 ||
                         x + 1 > 15 ||
                         z - 1 < 0 ||
@@ -119,25 +155,27 @@ public class ChunkProcessor implements Runnable {
                         continue;
                     }
                     
-                    if (chunk.getDataAt(x, (short) (y + 1), z) == 0 ||
-                        chunk.getDataAt(x, (short) (y - 1), z) == 0) {
-                        
-                        chunk.setVisibleDataId(x, y, z, id);
-                        continue;
-                    }
-                    
-                    if (chunk.getDataAt((byte) (x + 1), y, z) == 0 ||
-                        chunk.getDataAt((byte) (x - 1), y, z) == 0) {
-                        
-                        chunk.setVisibleDataId(x, y, z, id);
-                        continue;
-                    }
-                    
-                    if (chunk.getDataAt(x, y, (byte) (z + 1)) == 0 ||
-                        chunk.getDataAt(x, y, (byte) (z - 1)) == 0) {
-                        
-                        chunk.setVisibleDataId(x, y, z, id);
-                    }
+                    if (y > 0 && y < ChunkConstants.HEIGHT - 1) {
+                        if (chunk.getDataAt(x, (short) (y + 1), z) == 0 ||
+                            chunk.getDataAt(x, (short) (y - 1), z) == 0) {
+
+                            chunk.setVisibleDataId(x, y, z, id);
+                            continue;
+                        }
+
+                        if (chunk.getDataAt((byte) (x + 1), y, z) == 0 ||
+                            chunk.getDataAt((byte) (x - 1), y, z) == 0) {
+
+                            chunk.setVisibleDataId(x, y, z, id);
+                            continue;
+                        }
+
+                        if (chunk.getDataAt(x, y, (byte) (z + 1)) == 0 ||
+                            chunk.getDataAt(x, y, (byte) (z - 1)) == 0) {
+
+                            chunk.setVisibleDataId(x, y, z, id);
+                        }
+                    }*/
                 }
             }
         }

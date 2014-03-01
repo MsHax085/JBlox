@@ -63,7 +63,7 @@ public class Scene {
     public void initOpenGL() {
         GL11.glEnable(GL11.GL_TEXTURE_2D);// Enable 2D texture mapping
         GL11.glShadeModel(GL11.GL_SMOOTH);// Enable Smooth Shading
-        GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.5f);// Values when color buffers are cleared
+        GL11.glClearColor(0.2f, 0.7f, 1.0f, 1.0f);// Values when color buffers are cleared
         GL11.glClearDepth(1.0f);// Value when depth buffer is cleared
         
         GL11.glEnable(GL11.GL_DEPTH_TEST);// Enable depth testing
@@ -100,7 +100,7 @@ public class Scene {
         {
             final FloatBuffer fogColours = BufferUtils.createFloatBuffer(4);
             {
-                fogColours.put(new float[]{0, 0, 0, 1});
+                fogColours.put(new float[]{0.2f, 0.7f, 1.0f, 1.0f});
                 fogColours.flip();
             }
             GL11.glClearColor(0, 0, 0, 1);

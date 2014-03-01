@@ -21,16 +21,22 @@ public class Chunk {
     // -------------------------------------------------------------------------
     
     public byte getDataAt(final byte x, final short y, final byte z) {
+        if (x < 0 || x > 15 ||
+            z < 0 || z > 15 ||
+            y < 0 || y >= ChunkConstants.HEIGHT) {
+            
+            return 0;
+        }
         return chunkData[ChunkConstants.coordsToIndex(x, y, z)];
     }
     
     public byte getVisibleDataAt(final byte x, final short y, final byte z) {
-        try {
-        return visibleChunkData[ChunkConstants.coordsToIndex(x, y, z)];
-        } catch (Exception e) {
-            System.out.println(x + ", " + y + ", " + z);
+        if (x < 0 || x > 15 ||
+            z < 0 || z > 15 ||
+            y < 0 || y >= ChunkConstants.HEIGHT) {
+            
+            return 0;
         }
-        
         return visibleChunkData[ChunkConstants.coordsToIndex(x, y, z)];
     }
     

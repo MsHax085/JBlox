@@ -61,7 +61,7 @@ public class ChunkNoiseGenerator {
                     final double PARTICLES_NOISE = particles.noise(global_x, y, global_z, 0.4, 0.6);
                     
                     if (PARTICLES_NOISE < 0.9) {
-                        chunk.setDataId(x, y, z, getBlockIdByDepth(y, mountains_height));
+                        chunk.setDataId(x, y, z, getBlockIdByDepth(y, mountains_height), false);
                     }
                     
                 }
@@ -71,7 +71,7 @@ public class ChunkNoiseGenerator {
                     final double PARTICLES_NOISE = particles.noise(global_x, y, global_z, 0.3, 0.5);
                     
                     if (PARTICLES_NOISE < 0.9) {
-                        chunk.setDataId(x, y, z, getBlockIdByDepth(y, mountains_height));
+                        chunk.setDataId(x, y, z, getBlockIdByDepth(y, mountains_height), false);
                     }
                     
                 }
@@ -81,7 +81,7 @@ public class ChunkNoiseGenerator {
                     final double PARTICLES_NOISE = particles.noise(global_x, y, global_z, 0.3, 0.5);
                     
                     if (PARTICLES_NOISE < 0.9) {
-                        chunk.setDataId(x, y, z, getBlockIdByDepth(y, mountains_height));
+                        chunk.setDataId(x, y, z, getBlockIdByDepth(y, mountains_height), false);
                     }
                     
                 }

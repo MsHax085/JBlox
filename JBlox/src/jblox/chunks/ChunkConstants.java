@@ -6,7 +6,8 @@ package jblox.chunks;
  */
 public class ChunkConstants {
     
-    public static final short HEIGHT = 256;// Chunk Height
+    public static final short CHUNK_HEIGHT = 256;
+    public static final short CHUNK_SECTION_HEIGHT = 16;
     public static final byte RENDER_RADIUS = 4;
 
     public static final byte VERTEX_DATA_LENGTH = 8;
@@ -18,6 +19,10 @@ public class ChunkConstants {
     public static final byte TEXTURE_SIZE = 32;
     
     public final static int coordsToIndex(final byte x, final int y, final byte z) {// Coords in chunk
-        return (x * 16 + z) * HEIGHT + y;
+        return (x * 16 + z) * CHUNK_HEIGHT + y;
+    }
+    
+    public final static int coordsToSectionIndex(final byte x, final int y, final byte z) {// Coords in chunk section
+        return (x * 16 + z) * CHUNK_SECTION_HEIGHT + y;
     }
 }

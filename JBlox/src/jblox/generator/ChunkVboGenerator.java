@@ -2,8 +2,11 @@ package jblox.generator;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.HashMap;
+import java.util.Map.Entry;
 import jblox.chunks.Chunk;
 import jblox.chunks.ChunkConstants;
+import jblox.chunks.ChunkSection;
 import jblox.chunks.TextureProcessor;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL15;
@@ -24,36 +27,32 @@ public class ChunkVboGenerator {
     
     public void generateVBOHandles(final Chunk chunk) {
         
-        final byte vboChunks = (byte) Math.ceil(chunk.getUppermostBlockY() / 16.0);
-        final IntBuffer buffer = BufferUtils.createIntBuffer(vboChunks);
+        final HashMap<Byte, ChunkSection> entry = chunk.getChunkSections();
+        final IntBuffer buffer = BufferUtils.createIntBuffer(entry.size());
         
         GL15.glGenBuffers(buffer);
         
-        for (byte intHandle = 0; intHandle < vboChunks; intHandle++) {
-            chunk.setVboHandle(intHandle, buffer.get(intHandle));
+        byte index = 0;
+        for (ChunkSection section : entry.values()) {
+            section.setVboHandle(buffer.get(index));
+            index++;
         }
-        
-        chunk.setLastVboHandleIndex((byte) (vboChunks - 1));
     }
     
     public void generateVBOs(final Chunk chunk) {
         
-        final int[] vboHandles = chunk.getVboHandles();
-        final byte lastHandleIndex = chunk.getLastVboHandleIndex();// Last in array
-        
-        for (byte index = lastHandleIndex; index > -1; index--) {
+        for (Entry<Byte, ChunkSection> entry : chunk.getChunkSections().entrySet()) {
             
             final FloatBuffer vboBuffer = BufferUtils.createFloatBuffer(ChunkConstants.VBO_BUFFER_LENGTH);
-            final int handle = vboHandles[index];
+            final ChunkSection section = entry.getValue();
             
             for (byte y = 0; y < 16; y++) {
                 for (byte x = 0; x < 16; x++) {
                     for (byte z = 0; z < 16; z++) {
                         
-                        final short global_y = (short) ((index * 16) + y);
-                        final byte id = chunk.getVisibleDataAt(x, global_y, z);
+                        final byte id = section.getVisibleDataAt(x, y, z);
                         
-                        if (chunk.getVisibleDataAt(x, global_y, z) > 0) {
+                        if (id > 0) {
                             vboBuffer.put(generateQuad(x, y, z, id));
                         }
                     }
@@ -62,7 +61,7 @@ public class ChunkVboGenerator {
             
             vboBuffer.rewind();
             
-            GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, handle);// Bind new buffer
+            GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, section.getVboHandle());// Bind new buffer
             GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vboBuffer, GL15.GL_DYNAMIC_DRAW);// Upload buffer data
             GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);// Unbind buffer
             

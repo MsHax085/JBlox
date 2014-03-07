@@ -103,79 +103,45 @@ public class ChunkProcessor implements Runnable {
             for (byte x = 0; x < 16; x++) {
                 for (byte z = 0; z < 16; z++) {
                 
-                    final byte id = chunk.getDataAt(x, y, z);
+                    final byte id = chunk.getDataAt(x, y, z, false);
                     if (id == 0) {
                         continue;
                     }
                     
                     // BOTTOM LAYER
                     if (y == 0 &&
-                        (chunk.getDataAt((byte) (x - 1), y, z) == 0 ||
-                        chunk.getDataAt((byte) (x + 1), y, z) == 0 ||
-                        chunk.getDataAt(x, y, (byte) (z - 1)) == 0 ||
-                        chunk.getDataAt(x, y, (byte) (z + 1)) == 0)) {
+                        (chunk.getDataAt((byte) (x - 1), y, z, false) == 0 ||
+                        chunk.getDataAt((byte) (x + 1), y, z, false) == 0 ||
+                        chunk.getDataAt(x, y, (byte) (z - 1), false) == 0 ||
+                        chunk.getDataAt(x, y, (byte) (z + 1), false) == 0)) {
                         
-                        chunk.setVisibleDataId(x, y, z, id);
+                        chunk.setDataId(x, y, z, id, true);
                         continue;
                     }
                     
                     // TOP LAYER
-                    if (y == ChunkConstants.HEIGHT - 1 &&
-                        (chunk.getDataAt((byte) (x - 1), y, z) == 0 ||
-                        chunk.getDataAt((byte) (x + 1), y, z) == 0 ||
-                        chunk.getDataAt(x, y, (byte) (z - 1)) == 0 ||
-                        chunk.getDataAt(x, y, (byte) (z + 1)) == 0)) {
+                    if (y == ChunkConstants.CHUNK_HEIGHT - 1 &&
+                        (chunk.getDataAt((byte) (x - 1), y, z, false) == 0 ||
+                        chunk.getDataAt((byte) (x + 1), y, z, false) == 0 ||
+                        chunk.getDataAt(x, y, (byte) (z - 1), false) == 0 ||
+                        chunk.getDataAt(x, y, (byte) (z + 1), false) == 0)) {
                         
-                        chunk.setVisibleDataId(x, y, z, id);
+                        chunk.setDataId(x, y, z, id, true);
                         continue;
                     }
                     
                     // OTHER LAYERS
                     if (y > 0 &&
-                        y < ChunkConstants.HEIGHT - 1 &&
-                        (chunk.getDataAt((byte) (x - 1), y, z) == 0 ||
-                        chunk.getDataAt((byte) (x + 1), y, z) == 0 ||
-                        chunk.getDataAt(x, y, (byte) (z - 1)) == 0 ||
-                        chunk.getDataAt(x, y, (byte) (z + 1)) == 0 ||
-                        chunk.getDataAt(x, (short) (y - 1), z) == 0 ||
-                        chunk.getDataAt(x, (short) (y + 1), z) == 0)) {
+                        y < ChunkConstants.CHUNK_HEIGHT - 1 &&
+                        (chunk.getDataAt((byte) (x - 1), y, z, false) == 0 ||
+                        chunk.getDataAt((byte) (x + 1), y, z, false) == 0 ||
+                        chunk.getDataAt(x, y, (byte) (z - 1), false) == 0 ||
+                        chunk.getDataAt(x, y, (byte) (z + 1), false) == 0 ||
+                        chunk.getDataAt(x, (short) (y - 1), z, false) == 0 ||
+                        chunk.getDataAt(x, (short) (y + 1), z, false) == 0)) {
                         
-                        chunk.setVisibleDataId(x, y, z, id);
+                        chunk.setDataId(x, y, z, id, true);
                     }
-                    
-                    /*
-                    if ((y == 0 && chunk.getDataAt(x, (short) (y + 1), z) == 0) ||
-                        (y == ChunkConstants.HEIGHT - 1 && chunk.getDataAt(x, (short) (y - 1), z) == 0) ||
-                        x - 1 < 0 ||
-                        x + 1 > 15 ||
-                        z - 1 < 0 ||
-                        z + 1 > 15) {
-                        
-                        chunk.setVisibleDataId(x, y, z, id);
-                        continue;
-                    }
-                    
-                    if (y > 0 && y < ChunkConstants.HEIGHT - 1) {
-                        if (chunk.getDataAt(x, (short) (y + 1), z) == 0 ||
-                            chunk.getDataAt(x, (short) (y - 1), z) == 0) {
-
-                            chunk.setVisibleDataId(x, y, z, id);
-                            continue;
-                        }
-
-                        if (chunk.getDataAt((byte) (x + 1), y, z) == 0 ||
-                            chunk.getDataAt((byte) (x - 1), y, z) == 0) {
-
-                            chunk.setVisibleDataId(x, y, z, id);
-                            continue;
-                        }
-
-                        if (chunk.getDataAt(x, y, (byte) (z + 1)) == 0 ||
-                            chunk.getDataAt(x, y, (byte) (z - 1)) == 0) {
-
-                            chunk.setVisibleDataId(x, y, z, id);
-                        }
-                    }*/
                 }
             }
         }

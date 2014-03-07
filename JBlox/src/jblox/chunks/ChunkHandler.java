@@ -190,16 +190,14 @@ public class ChunkHandler {
      */
     public void renderChunk(final Chunk chunk) {
         
-        final int[] vboHandles = chunk.getVboHandles();
-        final byte lastHandleIndex = chunk.getLastVboHandleIndex();// Last in array
         final int textureId = textureProcessor.getTextureId();
         
-        for (byte index = lastHandleIndex; index > -1; index--) {
+        for (Entry<Byte, ChunkSection> entry : chunk.getChunkSections().entrySet()) {
             
-            final int handle = vboHandles[index];
+            final int handle = entry.getValue().getVboHandle();
             
             GL11.glPushMatrix();
-            GL11.glTranslatef(0, index * 16, 0);// TRANSLATE VBO ALONG Y-AXIS
+            GL11.glTranslatef(0, entry.getKey() * 16, 0);// TRANSLATE VBO ALONG Y-AXIS
             
             {
                 GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
@@ -247,7 +245,9 @@ public class ChunkHandler {
      */
     private void clearChunk(final Chunk chunk) {
         
-        for (int handle : chunk.getVboHandles()) {
+        for (Entry<Byte, ChunkSection> entry : chunk.getChunkSections().entrySet()) {
+            
+            final int handle = entry.getValue().getVboHandle();
             
             if (!(handle > 0)) {
                 break;

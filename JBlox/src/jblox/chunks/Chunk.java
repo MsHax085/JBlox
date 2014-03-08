@@ -71,6 +71,10 @@ public class Chunk {
         }
     }
     
+    public void setDataId(final int x, final int y, final int z, final int id, final boolean visible) {
+        setDataId((byte) x, (short) y, (byte) z, (byte) id, visible);
+    }
+    
     /**
      * This method modifies the chunk
      * This method modifies the stored data of a chunk, all and the visible data

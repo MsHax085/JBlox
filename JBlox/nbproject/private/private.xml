@@ -2,6 +2,16 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group/>
+        <group>
+            <file>file:/F:/GitHub/JBlox/JBlox/src/jblox/chunks/ChunkProcessor.java</file>
+            <file>file:/F:/GitHub/JBlox/JBlox/src/jblox/chunks/TextureProcessor.java</file>
+            <file>file:/F:/GitHub/JBlox/JBlox/src/jblox/chunks/ChunkConstants.java</file>
+            <file>file:/F:/GitHub/JBlox/JBlox/src/jblox/Entry.java</file>
+            <file>file:/F:/GitHub/JBlox/JBlox/src/jblox/chunks/ChunkSection.java</file>
+            <file>file:/F:/GitHub/JBlox/JBlox/src/jblox/chunks/Chunk.java</file>
+            <file>file:/F:/GitHub/JBlox/JBlox/src/jblox/chunks/ChunkHandler.java</file>
+            <file>file:/F:/GitHub/JBlox/JBlox/src/jblox/generator/ChunkNoiseGenerator.java</file>
+            <file>file:/F:/GitHub/JBlox/JBlox/src/jblox/generator/ChunkVboGenerator.java</file>
+        </group>
     </open-files>
 </project-private>

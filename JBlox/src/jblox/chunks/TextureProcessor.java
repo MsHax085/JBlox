@@ -55,29 +55,21 @@ public class TextureProcessor {
      */
     private int getActualId(final byte id, final boolean top, final boolean bottom) {
         
-        /*
-            0: AIR
-            1: STONE
-            2: GRASS
-            3: DIRT
-            4: GRAVEL
-        */
-        
         switch (id) {
             
             case 1:
             {
-                return 0;
+                return Material.AIR;
             }
             
             case 2:
             {
                 if (top) {
-                    return 2;
+                    return Material.GRASS;
                 }
                 
                 if (bottom) {
-                    return 3;
+                    return Material.DIRT;
                 }
                 
                 return id - 1;

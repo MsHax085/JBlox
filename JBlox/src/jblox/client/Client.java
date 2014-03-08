@@ -89,13 +89,15 @@ public class Client {
             zForce += zSpeed * FRICTION;
         }
         
+        final float multiplier = (ci.isRCTRLPressed()) ? 0.1f : 1.0f;
+        
         xSpeed += xForce;
         ySpeed += yForce;
         zSpeed += zForce;
         
-        x += xSpeed;
-        y += ySpeed;
-        z += zSpeed;
+        x += xSpeed * multiplier;
+        y += ySpeed * multiplier;
+        z += zSpeed * multiplier;
     }
     
     // -------------------------------------------------------------------------

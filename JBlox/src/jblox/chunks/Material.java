@@ -15,7 +15,8 @@ public class Material {
     public static final byte GRAVEL     = 4;
     public static final byte SAND       = 5;
     public static final byte LOG        = 6;
-    public static final byte LEAVES     = 7;
-    public static final byte BEDROCK    = 8;
+    public static final byte LOG_TOP    = 7;
+    public static final byte LEAVES     = 8;
+    public static final byte BEDROCK    = 9;
     
 }

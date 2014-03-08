@@ -3,7 +3,6 @@ package jblox.generator;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.HashMap;
-import java.util.Map.Entry;
 import jblox.chunks.Chunk;
 import jblox.chunks.ChunkConstants;
 import jblox.chunks.ChunkSection;
@@ -73,7 +72,7 @@ public class ChunkVboGenerator {
         
         short quadBufferLength = ChunkConstants.BYTES_PER_VERTEX * 6;
         final float WIDTH = 0.5f;// 0.5f
-       
+        
         final FloatBuffer quadBuffer = BufferUtils.createFloatBuffer(quadBufferLength);
         {
             quadBuffer.put(generateFrontQuad(x, y, z, WIDTH, id));
@@ -89,7 +88,7 @@ public class ChunkVboGenerator {
         return quadBuffer;
     }
     
-    private float[] generateFrontQuad(final byte x, final byte y, final byte z, final float width, final byte id) {
+    private float[] generateFrontQuad(byte x, byte y, byte z, float width, byte id) {
         
         final float tx1 = textureProcessor.getTextureX1(id, false, false);
         final float tx2 = tx1 + (1 / ChunkConstants.TEXTURE_COLS);
@@ -107,7 +106,7 @@ public class ChunkVboGenerator {
         return backQuad;
     }
     
-    private float[] generateBackQuad(final byte x, final byte y, final byte z, final float width, final byte id) {
+    private float[] generateBackQuad(byte x, byte y, byte z, float width, byte id) {
         
         final float tx1 = textureProcessor.getTextureX1(id, false, false);
         final float tx2 = tx1 + (1 / ChunkConstants.TEXTURE_COLS);
@@ -125,7 +124,7 @@ public class ChunkVboGenerator {
         return frontQuad;
     }
     
-    private float[] generateLeftQuad(final byte x, final byte y, final byte z, final float width, final byte id) {
+    private float[] generateLeftQuad(byte x, byte y, byte z, float width, byte id) {
         
         final float tx1 = textureProcessor.getTextureX1(id, false, false);
         final float tx2 = tx1 + (1 / ChunkConstants.TEXTURE_COLS);
@@ -143,7 +142,7 @@ public class ChunkVboGenerator {
         return leftQuad;
     }
     
-    private float[] generateRightQuad(final byte x, final byte y, final byte z, final float width, final byte id) {
+    private float[] generateRightQuad(byte x, byte y, byte z, float width, byte id) {
         
         final float tx1 = textureProcessor.getTextureX1(id, false, false);
         final float tx2 = tx1 + (1 / ChunkConstants.TEXTURE_COLS);
@@ -161,7 +160,7 @@ public class ChunkVboGenerator {
         return rightQuad;
     }
     
-    private float[] generateTopQuad(final byte x, final byte y, final byte z, final float width, final byte id) {
+    private float[] generateTopQuad(byte x, byte y, byte z, float width, byte id) {
         
         final float tx1 = textureProcessor.getTextureX1(id, true, false);
         final float tx2 = tx1 + (1 / ChunkConstants.TEXTURE_COLS);
@@ -179,7 +178,7 @@ public class ChunkVboGenerator {
         return topQuad;
     }
     
-    private float[] generateBottomQuad(final byte x, final byte y, final byte z, final float width, final byte id) {
+    private float[] generateBottomQuad(byte x, byte y, byte z, float width, byte id) {
         
         final float tx1 = textureProcessor.getTextureX1(id, false, true);
         final float tx2 = tx1 + (1 / ChunkConstants.TEXTURE_COLS);

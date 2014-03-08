@@ -13,7 +13,7 @@ public class ChunkSection {
     private int vboHandle;
     
     private final byte[] sectionData = new byte[16 * 16 * 16];
-    private final ArrayList<byte[]> visibleSectionData = new ArrayList<>();// int[x,y,z,id]
+    private final ArrayList<byte[]> visibleSectionData = new ArrayList<>();// int[x,y,z,id,light]
     
     // -------------------------------------------------------------------------
     

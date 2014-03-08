@@ -22,6 +22,7 @@ public class ClientInput {
     private boolean SPACE_PRESSED = false;
     private boolean SHIFT_PRESSED = false;
     private boolean ESC_PRESSED = false;
+    private boolean RCTRL_PRESSED = false;
 
     public void checkForInput() {
         
@@ -40,6 +41,7 @@ public class ClientInput {
                 case Keyboard.KEY_SPACE: SPACE_PRESSED = keyPressed; break;
                 case Keyboard.KEY_LSHIFT: SHIFT_PRESSED = keyPressed; break;
                 case Keyboard.KEY_ESCAPE: ESC_PRESSED = keyPressed; break;
+                case Keyboard.KEY_RCONTROL: RCTRL_PRESSED = keyPressed; break;
                 default: break;
             }
         }
@@ -98,5 +100,9 @@ public class ClientInput {
     
     public boolean isESCPressed() {
         return ESC_PRESSED;
+    }
+    
+    public boolean isRCTRLPressed() {
+        return RCTRL_PRESSED;
     }
 }

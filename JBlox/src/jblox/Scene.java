@@ -70,6 +70,11 @@ public class Scene {
         GL11.glDepthFunc(GL11.GL_LEQUAL);// Type of depth testing
         GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT, GL11.GL_NICEST);// Perspective calculations
         
+        GL11.glEnable(GL11.GL_BLEND);// Enable blending: "incoming primitive color is blended with the color already stored in the framebuffer"
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);// Set blending method
+        GL11.glEnable(GL11.GL_ALPHA_TEST);// Enable alpha channels or transparency
+        GL11.glAlphaFunc(GL11.GL_GREATER, 0.1f);// Specify reference value
+        
         // Enable VBO
         GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
         GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);

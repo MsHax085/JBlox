@@ -249,7 +249,7 @@ public class ChunkNoiseGenerator {
     
     private void gen_Tree(Chunk chunk, byte tx, short ty, byte tz) {
         
-        final int height = random.nextInt(2) + 3 + ty;
+        final int height = random.nextInt(2) + 2 + ty;
         
         short y = ty;
         for (; y <= height; y++) {    

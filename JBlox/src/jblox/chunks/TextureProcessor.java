@@ -57,12 +57,12 @@ public class TextureProcessor {
         
         switch (id) {
             
-            case 1:
+            case Material.STONE:
             {
                 return Material.AIR;
             }
             
-            case 2:
+            case Material.GRASS:
             {
                 if (top) {
                     return Material.GRASS;
@@ -73,6 +73,15 @@ public class TextureProcessor {
                 }
                 
                 return id - 1;
+            }
+            
+            case Material.LOG:
+            {
+                if (top || bottom) {
+                    return Material.LOG_TOP;
+                }
+                
+                return Material.LOG;
             }
             
             default:

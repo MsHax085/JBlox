@@ -194,8 +194,6 @@ public class ChunkHandler {
         
         for (Entry<Byte, ChunkSection> entry : chunk.getChunkSections().entrySet()) {
             
-            final int handle = entry.getValue().getVboHandle();
-            
             GL11.glPushMatrix();
             GL11.glTranslatef(0, entry.getKey() * 16, 0);// TRANSLATE VBO ALONG Y-AXIS
             
@@ -204,7 +202,7 @@ public class ChunkHandler {
 
                 GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
                 GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-                GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, handle);
+                GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, entry.getValue().getVboHandle());
 
                 GL11.glVertexPointer(3, GL11.GL_FLOAT, BYTES_PER_VERTEX, 0);
                 GL11.glNormalPointer(GL11.GL_FLOAT, BYTES_PER_VERTEX, 12);
@@ -245,9 +243,9 @@ public class ChunkHandler {
      */
     private void clearChunk(final Chunk chunk) {
         
-        for (Entry<Byte, ChunkSection> entry : chunk.getChunkSections().entrySet()) {
+        for (ChunkSection section : chunk.getChunkSections().values()) {
             
-            final int handle = entry.getValue().getVboHandle();
+            final int handle = section.getVboHandle();
             
             if (!(handle > 0)) {
                 break;

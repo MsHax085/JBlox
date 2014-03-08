@@ -57,16 +57,16 @@ public class Client {
                 yaw += 360;
             }
             
-            if (pitch >= 360) {
-                pitch -= 360;
-            } else if (pitch <= -360) {
-                pitch += 360;
+            if (pitch >= 90) {
+                pitch = 90;
+            } else if (pitch <= -90) {
+                pitch = -90;
             }
             
             final byte xAxisMultiplier = ci.getXAxisMultiplier();
             final byte zAxisMultiplier = ci.getZAxisMultiplier();
             
-            if (xAxisMultiplier < 0) {//    Sideways
+            if (xAxisMultiplier < 0) {// SIDEWAYS
                 xForce -= ACCELERATION * (float) Math.cos(Math.toRadians(yaw));
                 zForce -= ACCELERATION * (float) Math.sin(Math.toRadians(yaw));
             } else if (xAxisMultiplier > 0) {
@@ -74,7 +74,7 @@ public class Client {
                 zForce += ACCELERATION * (float) Math.sin(Math.toRadians(yaw));
             }
             
-            if (zAxisMultiplier < 0) {//    Depth
+            if (zAxisMultiplier < 0) {// DEPTH
                 xForce -= ACCELERATION * (float) Math.cos(Math.toRadians(yaw - 90));
                 zForce -= ACCELERATION * (float) Math.sin(Math.toRadians(yaw - 90));
             } else if (zAxisMultiplier > 0) {

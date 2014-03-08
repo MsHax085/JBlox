@@ -41,22 +41,19 @@ public class ChunkVboGenerator {
     
     public void generateVBOs(final Chunk chunk) {
         
-        for (Entry<Byte, ChunkSection> entry : chunk.getChunkSections().entrySet()) {
+        for (ChunkSection section : chunk.getChunkSections().values()) {
             
             final FloatBuffer vboBuffer = BufferUtils.createFloatBuffer(ChunkConstants.VBO_BUFFER_LENGTH);
-            final ChunkSection section = entry.getValue();
             
-            for (byte y = 0; y < 16; y++) {
-                for (byte x = 0; x < 16; x++) {
-                    for (byte z = 0; z < 16; z++) {
-                        
-                        final byte id = section.getVisibleDataAt(x, y, z);
-                        
-                        if (id > 0) {
-                            vboBuffer.put(generateQuad(x, y, z, id));
-                        }
-                    }
-                }
+            for (byte[] visibleData : section.getVisibleSectionData()) {
+                
+                final byte x    = visibleData[0];
+                final byte y    = visibleData[1];
+                final byte z    = visibleData[2];
+                final byte id   = visibleData[3];
+                
+                vboBuffer.put(generateQuad(x, y, z, id));
+                
             }
             
             vboBuffer.rewind();

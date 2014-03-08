@@ -65,7 +65,7 @@ public class Chunk {
         }
         
         if (visible) {
-            return sections.get(sectionIndex).getVisibleDataAt(x, y_in_section, z);
+            return 0;//sections.get(sectionIndex).getVisibleDataAt(x, y_in_section, z);
         } else {
             return sections.get(sectionIndex).getDataAt(x, y_in_section, z);
         }
@@ -96,7 +96,7 @@ public class Chunk {
         }
         
         if (visible) {
-            sections.get(sectionIndex).setVisibleDataId(x, y_in_section, z, id);
+            sections.get(sectionIndex).addVisibleData(x, y_in_section, z, id);
         } else {
             sections.get(sectionIndex).setDataId(x, y_in_section, z, id);
         }

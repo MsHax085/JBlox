@@ -55,8 +55,11 @@ public class ChunkProcessor implements Runnable {
      */
     private void processChunks() {
         
-        final int chunk_x = (int) (client.getX() / 16);
-        final int chunk_z = (int) (client.getZ() / 16);
+        final float x = client.getX();
+        final float z = client.getZ();
+        
+        final int chunk_x = (int) (x / 16);
+        final int chunk_z = (int) (z / 16);
 
         // VISIBLE CHUNKS
         final int chunk_x_min = (chunk_x + ChunkConstants.RENDER_RADIUS) * -1;
@@ -97,6 +100,9 @@ public class ChunkProcessor implements Runnable {
         }
     }
     
+    /*
+    TODO: SEPARATE INTO CHUNK SECTIONS
+    */
     private void determineVisibleChunkData(final Chunk chunk) {
         
         for (short y = 0; y <= chunk.getUppermostBlockY(); y++) {

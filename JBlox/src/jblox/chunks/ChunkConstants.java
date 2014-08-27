@@ -8,9 +8,9 @@ public class ChunkConstants {
     
     public static final short CHUNK_HEIGHT = 256;
     public static final short CHUNK_SECTION_HEIGHT = 16;
-    public static final byte RENDER_RADIUS = 4;
+    public static final byte RENDER_RADIUS = 6;
 
-    public static final byte VERTEX_DATA_LENGTH = 8;
+    public static final byte VERTEX_DATA_LENGTH = 4;
     public static final byte BYTES_PER_VERTEX = 32;
     public static final int VBO_BUFFER_LENGTH = (VERTEX_DATA_LENGTH * 4 * 6) * 16 * 16 * 16;// (Data * Vertices * Faces) * X_Length * Y_Length * Z_Length
     

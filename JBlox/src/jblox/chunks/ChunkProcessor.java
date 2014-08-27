@@ -55,8 +55,8 @@ public class ChunkProcessor implements Runnable {
      */
     private void processChunks() {
         
-        final float x = client.getX();
-        final float z = client.getZ();
+        final float x = 1;
+        final float z = 1;
         
         final int chunk_x = (int) (x / 16);
         final int chunk_z = (int) (z / 16);

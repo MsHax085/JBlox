@@ -6,6 +6,7 @@ JBlox is a furthermore improved version of my previous Minecraft inspired projec
 All my Minecraft inspired projects have used multithreading, from the late versions of Cubic3D to the today's version of JBlox. Everything surely can be done in one single thread, look at Minecraft! But in my case, I prefer leaving one thread (the main thread) for all the rendering, while doing calculations and preparations in another. Combining those two and sending information between these without leaving one thread to wait for the other, thus losing performance is a challenging task.
 
 ## Previous Screenshots
+![JBlox ScreenShot](http://i.gyazo.com/168df7718d097006523cd8dd738ec075.png)
 ![JBlox ScreenShot](http://gyazo.com/23d510d8701cc19383344d54ae19acc5.png)
 ![JBlox ScreenShot](http://gyazo.com/3f8e9da7d869c48a1a68f1c6d9161b3d.png)
 ![JBlox ScreenShot](http://gyazo.com/3939f15ff2d48661d1564ea77a514a3d.png)

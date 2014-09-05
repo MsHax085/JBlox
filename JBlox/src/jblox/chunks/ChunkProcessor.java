@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import jblox.Entry;
+import static jblox.chunks.ChunkConstants.RENDER_RADIUS;
 import jblox.client.Client;
 import jblox.generator.ChunkNoiseGenerator;
 
@@ -55,38 +56,61 @@ public class ChunkProcessor implements Runnable {
      */
     private void processChunks() {
         
-        final float x = 1;
-        final float z = 1;
+        final double yaw = Math.toRadians(client.getYaw() - 90);
         
-        final int chunk_x = (int) (x / 16);
-        final int chunk_z = (int) (z / 16);
+        final float x = (client.getX() / 16);// CHUNK COORDINATES
+        final float z = (client.getZ() / 16);
 
-        // VISIBLE CHUNKS
-        final int chunk_x_min = (chunk_x + ChunkConstants.RENDER_RADIUS) * -1;
-        final int chunk_z_min = (chunk_z + ChunkConstants.RENDER_RADIUS) * -1;
-        final int chunk_x_max = (chunk_x - ChunkConstants.RENDER_RADIUS) * -1;
-        final int chunk_z_max = (chunk_z - ChunkConstants.RENDER_RADIUS) * -1;
+        final int x_far_center = (int) ((RENDER_RADIUS * Math.cos(yaw)) - x);// Chunk far left on screen
+        final int z_far_center = (int) ((RENDER_RADIUS * Math.sin(yaw)) - z);
+        
+        final int x_far_left = (int) ((RENDER_RADIUS * Math.cos(yaw + 45)) - x);// Chunk far left on screen
+        final int z_far_left = (int) ((RENDER_RADIUS * Math.sin(yaw + 45)) - z);
+        
+        final int x_far_right = (int) ((RENDER_RADIUS * Math.cos(yaw - 45)) - x);// Chunk far right on screen
+        final int z_far_right = (int) ((RENDER_RADIUS * Math.sin(yaw - 45)) - z);
+        
+        final int x_behind = (int) ((Math.cos(yaw - 180) * (RENDER_RADIUS / 2)) - x);// Chunk near (behind) on screen
+        final int z_behind = (int) ((Math.sin(yaw - 180) * (RENDER_RADIUS / 2)) - z);
+        
+        final int max_x_1 = (x_far_left < x_far_right) ? x_far_right : x_far_left;
+        final int max_x_2 = (max_x_1 < x_behind) ? x_behind : max_x_1;
+        final int max_x_3 = (max_x_2 < x_far_center) ? x_far_center : max_x_2;
+        
+        final int max_z_1 = (z_far_left < z_far_right) ? z_far_right : z_far_left;
+        final int max_z_2 = (max_z_1 < z_behind) ? z_behind : max_z_1;
+        final int max_z_3 = (max_z_2 < z_far_center) ? z_far_center : max_z_2;
+        
+        final int min_x_1 = (x_far_left > x_far_right) ? x_far_right : x_far_left;
+        final int min_x_2 = (min_x_1 > x_behind) ? x_behind : min_x_1;
+        final int min_x_3 = (min_x_2 > x_far_center) ? x_far_center : min_x_2;
+        
+        final int min_z_1 = (z_far_left > z_far_right) ? z_far_right : z_far_left;
+        final int min_z_2 = (min_z_1 > z_behind) ? z_behind : min_z_1;
+        final int min_z_3 = (min_z_2 > z_far_center) ? z_far_center : min_z_2;
         
         chunks_to_remove.clear();
         chunks_to_remove.addAll(chunk_buffer_copy);
-
+        
         // UPDATE SECONDARY CHUNK BUFFER
-        for (int cx = chunk_x_min; cx <= chunk_x_max - 1; cx++) {
-            for (int cz = chunk_z_min; cz <= chunk_z_max - 1; cz++) {
-
+        for (int cx = min_x_3; cx < max_x_3; cx++) {
+            
+            for (int cz = min_z_3; cz < max_z_3; cz++) {
+                
                 final String key = cx + " . " + cz;
                 
                 if (chunks_to_remove.contains(key)) {// ALSO EXIST IN BUFFER COPY
                     chunks_to_remove.remove(key);
-                    
+
                 } else {// CREATE NEW CHUNKS
                     final Chunk chunk = new Chunk();
                     chunkNoiseGenerator.generateNoise(cx, cz, chunk);
                     determineVisibleChunkData(chunk);
-                    
+
                     chunk_buffer_copy.add(key);
                     handler.addToCreateBuffer(key, chunk);
                 }
+                
             }
         }
         

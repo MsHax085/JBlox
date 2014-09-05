@@ -97,7 +97,7 @@ public class ChunkHandler {
                 
                 if (!dispose_buffer.isEmpty()) {
                     for (String key : dispose_buffer) {
-
+                        
                         clearChunk(chunk_buffer.get(key));
                         chunk_buffer.remove(key);
 
@@ -242,6 +242,10 @@ public class ChunkHandler {
      * @param chunk The chunk to be cleared
      */
     private void clearChunk(final Chunk chunk) {
+        
+        if (chunk == null || chunk.getChunkSections() == null || chunk.getChunkSections().isEmpty()) {
+            return;
+        }
         
         for (ChunkSection section : chunk.getChunkSections().values()) {
             
